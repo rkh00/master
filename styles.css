@@ -1,9 +1,10 @@
-#map { /* This is the CSS style for the map container */
-    height: 100vh; /* Adjust the height of your map */
-    width: 100vw; /* Adjust the width of your map */
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
+#map {
+  /* This is the CSS style for the map container */
+  height: 100vh; /* Adjust the height of your map */
+  width: 100vw; /* Adjust the width of your map */
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
 }
