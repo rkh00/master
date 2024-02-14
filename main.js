@@ -28,6 +28,26 @@ var layerControl = L.control
   .layers(null, overlayMaps, layerControlOptions)
   .addTo(map);
 
+$(document).ready(function () {
+  // Function to fetch and parse the CSV file
+  function importCSV() {
+    $.ajax({
+      url: "kommunenummer.csv", // Replace 'example.csv' with the path to your CSV file
+      dataType: "text",
+      success: function (csvData) {
+        // Parse the CSV using jquery-csv
+        var data = $.csv.toArrays(csvData);
+
+        // Now 'data' contains the parsed CSV data
+        console.log(data);
+      },
+    });
+  }
+
+  // Call the importCSV function when the document is ready
+  importCSV();
+});
+
 var geojsonData;
 
 async function fetchGeoJSON() {
