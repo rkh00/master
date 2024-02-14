@@ -28,26 +28,6 @@ var layerControl = L.control
   .layers(null, overlayMaps, layerControlOptions)
   .addTo(map);
 
-// $(document).ready(function () {
-//   // Function to fetch and parse the CSV file
-//   function importCSV() {
-//     $.ajax({
-//       url: "kommunenummer.csv", // Replace 'example.csv' with the path to your CSV file
-//       dataType: "text",
-//       success: function (csvData) {
-//         // Parse the CSV using jquery-csv
-//         var data = $.csv.toArrays(csvData);
-
-//         // Now 'data' contains the parsed CSV data
-//         console.log(data);
-//       },
-//     });
-//   }
-
-//   // Call the importCSV function when the document is ready
-//   importCSV();
-// });
-
 var geojsonData;
 
 async function fetchGeoJSON(kommunenummer) {
@@ -85,7 +65,7 @@ async function addGeoJSONToMap(kommunenummer) {
 // ];
 
 var kommuneList = [
-  { nummer: "301", navn: "Oslo" },
+  { nummer: "0301", navn: "Oslo" },
   { nummer: "1101", navn: "Eigersund" },
   { nummer: "1103", navn: "Stavanger" },
   { nummer: "1106", navn: "Haugesund" },
@@ -470,7 +450,6 @@ function displayResults(results) {
   results.forEach((result) => {
     const resultElement = document.createElement("div");
     resultElement.textContent = result.navn; // Display the string value
-    console.log(result.nummer);
     resultElement.addEventListener("click", () => {
       // Call your JavaScript function here, passing the clicked result as an argument
       addGeoJSONToMap(result.nummer);
