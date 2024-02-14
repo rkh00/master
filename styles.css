@@ -8,3 +8,37 @@
   left: 0;
   right: 0;
 }
+
+#searchInput {
+  width: 200px;
+  padding: 5px;
+  margin-bottom: 10px;
+  top: 50px;
+  right: 10px;
+}
+
+#searchResults {
+  display: none;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  padding: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+  top: 80px;
+  right: 10px;
+}
+
+#searchResults div {
+  cursor: pointer;
+  margin-bottom: 5px;
+}
+
+#searchResults div:hover {
+  background-color: #f0f0f0;
+}
+
+.search {
+  position: absolute;
+  z-index: 500;
+}
