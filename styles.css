@@ -13,7 +13,7 @@
   width: 200px;
   padding: 5px;
   margin-bottom: 10px;
-  top: 50px;
+  top: 80px;
   right: 10px;
 }
 
@@ -24,11 +24,11 @@
   background-color: #fff;
   padding: 10px;
   overflow-y: auto;
-  top: 80px;
+  top: 110px;
   right: 10px;
   width: 200px;
   margin-bottom: 10px;
-  max-height: calc(90% - 10px);
+  max-height: calc(90% - 45px);
   cursor: default;
 }
 

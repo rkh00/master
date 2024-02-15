@@ -54,8 +54,8 @@ async function fetchGeoJSON(nummer) {
   return;
 }
 
-async function addGeoJSONToMap(kommunenummer) {
-  await fetchGeoJSON(kommunenummer);
+async function addGeoJSONToMap(nummer, navn) {
+  await fetchGeoJSON(nummer);
   var coordinates = geojsonData.omrade.coordinates;
   delete geojsonData.crs;
   delete geojsonData.omrade;
@@ -68,7 +68,9 @@ async function addGeoJSONToMap(kommunenummer) {
 
   midpoint = calculateAverages(geojsonCoords);
   pointLayer.clearLayers();
-  var marker = L.marker([midpoint[1], midpoint[0]]).addTo(pointLayer);
+  var marker = L.marker([midpoint[1], midpoint[0]])
+    .bindPopup(`<b>Midpoint of ${navn}:</b><br>${midpoint[1]}, ${midpoint[0]}`)
+    .addTo(pointLayer);
 
   map.fitBounds(polygonLayer.getBounds());
 
@@ -138,7 +140,7 @@ function displayResults(results1, results2) {
       const resultElement = document.createElement("div");
       resultElement.textContent = result.navn;
       resultElement.addEventListener("click", () => {
-        addGeoJSONToMap(result.nummer);
+        addGeoJSONToMap(result.nummer, result.navn);
         document.getElementById("searchInput").value = "";
         resultsContainer.style.display = "none";
       });
@@ -158,7 +160,7 @@ function displayResults(results1, results2) {
       const resultElement = document.createElement("div");
       resultElement.textContent = result.navn;
       resultElement.addEventListener("click", () => {
-        addGeoJSONToMap(result.nummer);
+        addGeoJSONToMap(result.nummer, result.navn);
         document.getElementById("searchInput").value = "";
         resultsContainer.style.display = "none";
       });
