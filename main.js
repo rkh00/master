@@ -61,12 +61,12 @@ async function addGeoJSONToMap(nummer, navn) {
   delete geojsonData.omrade;
   geojsonData.coordinates = coordinates;
   geojsonData.type = "MultiPolygon";
-  geojsonCoords = coordinates[0][0];
+  // geojsonCoords = coordinates[0][0];
 
   polygonLayer.clearLayers();
   polygonLayer.addData(geojsonData);
 
-  midpoint = calculateAverages(geojsonCoords);
+  var midpoint = calculateAverages(coordinates);
   pointLayer.clearLayers();
   var marker = L.marker([midpoint[1], midpoint[0]])
     .bindPopup(`<b>Midpoint of ${navn}:</b><br>${midpoint[1]}, ${midpoint[0]}`)
@@ -78,17 +78,19 @@ async function addGeoJSONToMap(nummer, navn) {
 }
 
 function calculateAverages(coordinateArray) {
-  var minLong = coordinateArray[0][0];
-  var maxLong = coordinateArray[0][0];
-  var minLat = coordinateArray[0][1];
-  var maxLat = coordinateArray[0][1];
+  var minLong = coordinateArray[0][0][0][0];
+  var maxLong = coordinateArray[0][0][0][0];
+  var minLat = coordinateArray[0][0][0][1];
+  var maxLat = coordinateArray[0][0][0][1];
 
   // Find the minimum and maximum values for each column
   coordinateArray.forEach((innerArray) => {
-    minLong = Math.min(minLong, innerArray[0]);
-    maxLong = Math.max(maxLong, innerArray[0]);
-    minLat = Math.min(minLat, innerArray[1]);
-    maxLat = Math.max(maxLat, innerArray[1]);
+    innerArray.forEach((coordinate) => {
+      minLong = Math.min(minLong, coordinate[0][0]);
+      maxLong = Math.max(maxLong, coordinate[0][0]);
+      minLat = Math.min(minLat, coordinate[0][1]);
+      maxLat = Math.max(maxLat, coordinate[0][1]);
+    });
   });
 
   // Calculate the averages of the minimum and maximum values
