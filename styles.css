@@ -23,10 +23,12 @@
   border: 1px solid #ccc;
   background-color: #fff;
   padding: 10px;
-  max-height: 200px;
   overflow-y: auto;
   top: 80px;
   right: 10px;
+  width: 200px;
+  margin-bottom: 10px;
+  max-height: calc(90% - 10px);
 }
 
 #searchResults div {
