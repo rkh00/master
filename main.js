@@ -21,8 +21,8 @@ var baseMaps = {
 };
 
 var overlayMaps = {
-  polygonLayer: polygonLayer,
-  pointLayer: pointLayer,
+  "Show polygon": polygonLayer,
+  "Show midpoint": pointLayer,
 };
 
 var layerControlOptions = { collapsed: false };
@@ -31,7 +31,6 @@ var layerControl = L.control
   .addTo(map);
 
 var geojsonData;
-var geojsonCoords;
 
 async function fetchGeoJSON(nummer) {
   if (nummer.length == 4) {
@@ -61,12 +60,11 @@ async function addGeoJSONToMap(nummer, navn) {
   delete geojsonData.omrade;
   geojsonData.coordinates = coordinates;
   geojsonData.type = "MultiPolygon";
-  // geojsonCoords = coordinates[0][0];
 
   polygonLayer.clearLayers();
   polygonLayer.addData(geojsonData);
 
-  var midpoint = calculateAverages(coordinates);
+  var midpoint = findMinRectangleCentroid(geojsonData.coordinates);
   pointLayer.clearLayers();
   var marker = L.marker([midpoint[1], midpoint[0]])
     .bindPopup(`<b>Midpoint of ${navn}:</b><br>${midpoint[1]}, ${midpoint[0]}`)
@@ -77,7 +75,7 @@ async function addGeoJSONToMap(nummer, navn) {
   // TODO Ping to new GeoJSON
 }
 
-function calculateAverages(coordinateArray) {
+function findMinRectangleCentroid(coordinateArray) {
   var minLong = coordinateArray[0][0][0][0];
   var maxLong = coordinateArray[0][0][0][0];
   var minLat = coordinateArray[0][0][0][1];
@@ -133,7 +131,7 @@ function displayResults(results1, results2) {
 
   if (results1.length > 0) {
     const categoryTitle1 = document.createElement("div");
-    categoryTitle1.innerHTML = "<b>Kommuner:</b>";
+    categoryTitle1.innerHTML = `<b>Municipalities (${results1.length}):</b>`;
     categoryTitle1.classList.add("category-title");
     resultsContainer.appendChild(categoryTitle1);
 
@@ -153,7 +151,7 @@ function displayResults(results1, results2) {
 
   if (results2.length > 0) {
     const categoryTitle2 = document.createElement("div");
-    categoryTitle2.innerHTML = "<b>Fylker:</b>";
+    categoryTitle2.innerHTML = `<b>Counties (${results2.length}):</b>`;
     categoryTitle2.classList.add("category-title");
     resultsContainer.appendChild(categoryTitle2);
 
