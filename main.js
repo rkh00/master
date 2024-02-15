@@ -84,12 +84,12 @@ function calculateAverages(coordinateArray) {
   var maxLat = coordinateArray[0][0][0][1];
 
   // Find the minimum and maximum values for each column
-  coordinateArray.forEach((innerArray) => {
-    innerArray.forEach((coordinate) => {
-      minLong = Math.min(minLong, coordinate[0][0]);
-      maxLong = Math.max(maxLong, coordinate[0][0]);
-      minLat = Math.min(minLat, coordinate[0][1]);
-      maxLat = Math.max(maxLat, coordinate[0][1]);
+  coordinateArray.forEach((polygon) => {
+    polygon[0].forEach((coordinate) => {
+      minLong = Math.min(minLong, coordinate[0]);
+      maxLong = Math.max(maxLong, coordinate[0]);
+      minLat = Math.min(minLat, coordinate[1]);
+      maxLat = Math.max(maxLat, coordinate[1]);
     });
   });
 
