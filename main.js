@@ -61,9 +61,19 @@ async function addGeoJSONToMap(kommunenummer) {
 
   geojsonLayer.clearLayers();
   geojsonLayer.addData(geojsonData);
+  map.fitBounds(geojsonLayer.getBounds());
 
   // TODO Ping to new GeoJSON
 }
+
+// function panToGeojson(polygon) {
+
+// }
+
+// geojsonLayer.on("add", () => {
+//   console.log("hello");
+//   map.fitBounds(geojsonLayer.getBounds());
+// });
 
 // Function to perform search
 function search(query) {
@@ -101,6 +111,7 @@ function displayResults(results1, results2) {
     categoryTitle1.innerHTML = "<b>Kommuner:</b>";
     resultsContainer.appendChild(categoryTitle1);
 
+    results1.sort((a, b) => a.navn.localeCompare(b.navn));
     results1.forEach((result) => {
       const resultElement = document.createElement("div");
       resultElement.textContent = result.navn;
@@ -118,6 +129,7 @@ function displayResults(results1, results2) {
     categoryTitle2.innerHTML = "<b>Fylker:</b>";
     resultsContainer.appendChild(categoryTitle2);
 
+    results2.sort((a, b) => a.navn.localeCompare(b.navn));
     results2.forEach((result) => {
       const resultElement = document.createElement("div");
       resultElement.textContent = result.navn;
