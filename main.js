@@ -13,14 +13,16 @@ marker
   .bindPopup("<b>Norges geografiske midtpunkt</b><br>Ifølge Kartverket.")
   .openPopup();
 
-var geojsonLayer = L.geoJSON().addTo(map);
+var polygonLayer = L.geoJSON().addTo(map);
+var pointLayer = L.layerGroup().addTo(map);
 
 var baseMaps = {
   osm: osm,
 };
 
 var overlayMaps = {
-  geojsonLayer: geojsonLayer,
+  polygonLayer: polygonLayer,
+  pointLayer: pointLayer,
 };
 
 var layerControlOptions = { collapsed: false };
@@ -29,6 +31,7 @@ var layerControl = L.control
   .addTo(map);
 
 var geojsonData;
+var geojsonCoords;
 
 async function fetchGeoJSON(nummer) {
   if (nummer.length == 4) {
@@ -58,22 +61,40 @@ async function addGeoJSONToMap(kommunenummer) {
   delete geojsonData.omrade;
   geojsonData.coordinates = coordinates;
   geojsonData.type = "MultiPolygon";
+  geojsonCoords = coordinates[0][0];
 
-  geojsonLayer.clearLayers();
-  geojsonLayer.addData(geojsonData);
-  map.fitBounds(geojsonLayer.getBounds());
+  polygonLayer.clearLayers();
+  polygonLayer.addData(geojsonData);
+
+  midpoint = calculateAverages(geojsonCoords);
+  pointLayer.clearLayers();
+  var marker = L.marker([midpoint[1], midpoint[0]]).addTo(pointLayer);
+
+  map.fitBounds(polygonLayer.getBounds());
 
   // TODO Ping to new GeoJSON
 }
 
-// function panToGeojson(polygon) {
+function calculateAverages(coordinateArray) {
+  var minLong = coordinateArray[0][0];
+  var maxLong = coordinateArray[0][0];
+  var minLat = coordinateArray[0][1];
+  var maxLat = coordinateArray[0][1];
 
-// }
+  // Find the minimum and maximum values for each column
+  coordinateArray.forEach((innerArray) => {
+    minLong = Math.min(minLong, innerArray[0]);
+    maxLong = Math.max(maxLong, innerArray[0]);
+    minLat = Math.min(minLat, innerArray[1]);
+    maxLat = Math.max(maxLat, innerArray[1]);
+  });
 
-// geojsonLayer.on("add", () => {
-//   console.log("hello");
-//   map.fitBounds(geojsonLayer.getBounds());
-// });
+  // Calculate the averages of the minimum and maximum values
+  const avgLong = (minLong + maxLong) / 2;
+  const avgLat = (minLat + maxLat) / 2;
+
+  return [avgLong, avgLat];
+}
 
 // Function to perform search
 function search(query) {
