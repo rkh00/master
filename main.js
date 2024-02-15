@@ -109,6 +109,7 @@ function displayResults(results1, results2) {
   if (results1.length > 0) {
     const categoryTitle1 = document.createElement("div");
     categoryTitle1.innerHTML = "<b>Kommuner:</b>";
+    categoryTitle1.classList.add("category-title");
     resultsContainer.appendChild(categoryTitle1);
 
     results1.sort((a, b) => a.navn.localeCompare(b.navn));
@@ -120,6 +121,7 @@ function displayResults(results1, results2) {
         document.getElementById("searchInput").value = "";
         resultsContainer.style.display = "none";
       });
+      resultElement.classList.add("searchResult");
       resultsContainer.appendChild(resultElement);
     });
   }
@@ -127,6 +129,7 @@ function displayResults(results1, results2) {
   if (results2.length > 0) {
     const categoryTitle2 = document.createElement("div");
     categoryTitle2.innerHTML = "<b>Fylker:</b>";
+    categoryTitle2.classList.add("category-title");
     resultsContainer.appendChild(categoryTitle2);
 
     results2.sort((a, b) => a.navn.localeCompare(b.navn));
@@ -138,6 +141,7 @@ function displayResults(results1, results2) {
         document.getElementById("searchInput").value = "";
         resultsContainer.style.display = "none";
       });
+      resultElement.classList.add("searchResult");
       resultsContainer.appendChild(resultElement);
     });
   }
@@ -159,3 +163,9 @@ document
   .addEventListener("dblclick", function (event) {
     event.stopPropagation();
   });
+
+// TODO: Enter key press when only one result brings user straight to only result
+// document.getElementById("searchInput").addEventListener("keydown", (event) => {
+//   if (event.keyCode !== 13) return;
+//   handleEnterKeyPress();
+// });

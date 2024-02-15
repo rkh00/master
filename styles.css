@@ -29,10 +29,10 @@
   width: 200px;
   margin-bottom: 10px;
   max-height: calc(90% - 10px);
+  cursor: default;
 }
 
 #searchResults div {
-  cursor: pointer;
   margin-bottom: 5px;
 }
 
@@ -43,4 +43,12 @@
 .search {
   position: absolute;
   z-index: 500;
+}
+
+.category-title {
+  pointer-events: none;
+}
+
+.searchResult {
+  cursor: pointer;
 }
