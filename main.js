@@ -33,6 +33,7 @@ var layerControl = L.control
 var geojsonData;
 var selectedCentroid = "moment";
 var kommunenavn;
+var leafletPolygonCenter;
 
 async function fetchGeoJSON(nummer) {
   if (nummer.length == 4) {
@@ -68,6 +69,7 @@ async function addGeoJSONToMap(nummer) {
   polygonLayer.addData(geojsonData);
 
   map.fitBounds(polygonLayer.getBounds());
+  leafletPolygonCenter = polygonLayer.getBounds().getCenter();
 
   addCentroidToMap();
 }
@@ -85,7 +87,7 @@ function addCentroidToMap() {
 function findCentroid(coordinateArray) {
   switch (selectedCentroid) {
     case "moment":
-      return findMomentCentroid(coordinateArray);
+      return findMomentCentroid(coordinateArray, leafletPolygonCenter);
     case "area":
       return findAreaCentroid(coordinateArray);
     case "arith_mean":

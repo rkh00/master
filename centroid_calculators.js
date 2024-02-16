@@ -1,8 +1,30 @@
-function findMomentCentroid(coordinateArray) {
-  console.log("Not implemented yet!");
-  return;
-}
+function findMomentCentroid(coordinateArray, leafletPolygonCenter) {
+  var xSum = 0;
+  var ySum = 0;
+  var area = 0;
 
+  coordinateArray.forEach((polygon) => {
+    const numPoints = polygon[0].length;
+    for (let i = 0; i < numPoints - 1; i++) {
+      const xi = polygon[0][i][0];
+      const yi = polygon[0][i][1];
+      const xiPlus1 = polygon[0][i + 1][0];
+      const yiPlus1 = polygon[0][i + 1][1];
+
+      const ai = xi * yiPlus1 - xiPlus1 * yi; // Cross-product to calculate the area of the triangle
+      area += ai;
+      xSum += (xi + xiPlus1) * ai; // Accumulate sum of moments along x-axis
+      ySum += (yi + yiPlus1) * ai; // Accumulate sum of moments along y-axis
+    }
+  });
+
+  area /= 2; // The area calculated will be twice the actual area, so we divide by 2
+
+  const centroidX = xSum / (6 * area); // Calculate centroid's x-coordinate
+  const centroidY = ySum / (6 * area); // Calculate centroid's y-coordinate
+
+  return [centroidX, centroidY];
+}
 function findAreaCentroid(coordinateArray) {
   console.log("Not implemented yet!");
   return;
