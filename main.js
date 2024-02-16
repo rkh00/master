@@ -10,7 +10,7 @@ var osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 var marker = L.marker([63.990556, 12.307778]).addTo(map);
 
 marker
-  .bindPopup("<b>Norges geografiske midtpunkt</b><br>Ifølge Kartverket.")
+  .bindPopup("<b>Norway's geographic centroid</b><br>According to Kartverket.")
   .openPopup();
 
 var polygonLayer = L.geoJSON().addTo(map);
@@ -22,7 +22,7 @@ var baseMaps = {
 
 var overlayMaps = {
   "Show polygon": polygonLayer,
-  "Show midpoint": pointLayer,
+  "Show centroid": pointLayer,
 };
 
 var layerControlOptions = { collapsed: false };
@@ -31,6 +31,8 @@ var layerControl = L.control
   .addTo(map);
 
 var geojsonData;
+var selectedCentroid = "moment";
+var kommunenavn;
 
 async function fetchGeoJSON(nummer) {
   if (nummer.length == 4) {
@@ -53,8 +55,9 @@ async function fetchGeoJSON(nummer) {
   return;
 }
 
-async function addGeoJSONToMap(nummer, navn) {
+async function addGeoJSONToMap(nummer) {
   await fetchGeoJSON(nummer);
+  kommunenavn = geojsonData.kommunenavn;
   var coordinates = geojsonData.omrade.coordinates;
   delete geojsonData.crs;
   delete geojsonData.omrade;
@@ -64,38 +67,42 @@ async function addGeoJSONToMap(nummer, navn) {
   polygonLayer.clearLayers();
   polygonLayer.addData(geojsonData);
 
-  var midpoint = findMinRectangleCentroid(geojsonData.coordinates);
-  pointLayer.clearLayers();
-  var marker = L.marker([midpoint[1], midpoint[0]])
-    .bindPopup(`<b>Midpoint of ${navn}:</b><br>${midpoint[1]}, ${midpoint[0]}`)
-    .addTo(pointLayer);
-
   map.fitBounds(polygonLayer.getBounds());
 
-  // TODO Ping to new GeoJSON
+  addCentroidToMap();
 }
 
-function findMinRectangleCentroid(coordinateArray) {
-  var minLong = coordinateArray[0][0][0][0];
-  var maxLong = coordinateArray[0][0][0][0];
-  var minLat = coordinateArray[0][0][0][1];
-  var maxLat = coordinateArray[0][0][0][1];
+function addCentroidToMap() {
+  var centroid = findCentroid(geojsonData.coordinates);
+  pointLayer.clearLayers();
+  var marker = L.marker([centroid[1], centroid[0]])
+    .bindPopup(
+      `<b>Centroid of ${kommunenavn}:</b><br>${centroid[1]}, ${centroid[0]}`
+    )
+    .addTo(pointLayer);
+}
 
-  // Find the minimum and maximum values for each column
-  coordinateArray.forEach((polygon) => {
-    polygon[0].forEach((coordinate) => {
-      minLong = Math.min(minLong, coordinate[0]);
-      maxLong = Math.max(maxLong, coordinate[0]);
-      minLat = Math.min(minLat, coordinate[1]);
-      maxLat = Math.max(maxLat, coordinate[1]);
-    });
-  });
-
-  // Calculate the averages of the minimum and maximum values
-  const avgLong = (minLong + maxLong) / 2;
-  const avgLat = (minLat + maxLat) / 2;
-
-  return [avgLong, avgLat];
+function findCentroid(coordinateArray) {
+  switch (selectedCentroid) {
+    case "moment":
+      return findMomentCentroid(coordinateArray);
+    case "area":
+      return findAreaCentroid(coordinateArray);
+    case "arith_mean":
+      return findArithmeticMeanCentroid(coordinateArray);
+    case "rms":
+      return findRootMeanSquareCentroid(coordinateArray);
+    case "harmonic":
+      return findHarmonicMeanCentroid(coordinateArray);
+    case "geo_mean":
+      return findGeometricMeanCentroid(coordinateArray);
+    case "median":
+      return findMedianCentroid(coordinateArray);
+    case "min_bound":
+      return findMinRectangleCentroid(coordinateArray);
+    default:
+      console.log("An unknown error occurred.");
+  }
 }
 
 // Function to perform search
@@ -192,3 +199,82 @@ document
 //   if (event.keyCode !== 13) return;
 //   handleEnterKeyPress();
 // });
+
+// Define a custom control class by extending L.Control
+var CustomControl = L.Control.extend({
+  options: {
+    position: "bottomleft", // Position of the control on the map
+    collapsed: true,
+  },
+
+  onAdd: function (map) {
+    // Create a container element for the control
+    var container = L.DomUtil.create(
+      "div",
+      "leaflet-bar leaflet-control custom-control"
+    );
+
+    // Add content to the container
+    container.innerHTML = `
+        <b>Select centroid</b>
+        <div>
+            <input type="radio" id="option1" name="options" value="moment" checked>
+            <label for="option1">Moment Centroid</label>
+        </div>
+        <div>
+            <input type="radio" id="option2" name="options" value="area">
+            <label for="option2">Area Centroid</label>
+        </div>
+        <div>
+            <input type="radio" id="option3" name="options" value="arith_mean">
+            <label for="option2">Arithmetic Mean Centroid</label>
+        </div>
+        <div>
+            <input type="radio" id="option4" name="options" value="rms">
+            <label for="option2">Root Mean Square Centroid</label>
+        </div>
+        <div>
+            <input type="radio" id="option5" name="options" value="harmonic">
+            <label for="option2">Harmonic Mean Centroid</label>
+        </div>
+        <div>
+            <input type="radio" id="option6" name="options" value="geo_mean">
+            <label for="option2">Geometric Mean Centroid</label>
+        </div>
+        <div>
+            <input type="radio" id="option7" name="options" value="median">
+            <label for="option2">Median Centroid</label>
+        </div>
+        <div>
+            <input type="radio" id="option8" name="options" value="min_bound">
+            <label for="option2">Minimum Bounding Centroid</label>
+        </div>
+    `;
+
+    // Function to handle radio button change
+    function handleRadioChange(event) {
+      // console.log("Selected option:", event.target.value);
+      selectedCentroid = event.target.value;
+      if (geojsonData != null) {
+        addCentroidToMap();
+      }
+      // Call your custom function here based on the selected option
+    }
+
+    // Attach event listeners to radio buttons
+    var radios = container.querySelectorAll('input[type="radio"]');
+    radios.forEach(function (radio) {
+      radio.addEventListener("change", handleRadioChange);
+    });
+
+    // Stop propagation of click events to prevent map interaction
+    L.DomEvent.disableClickPropagation(container);
+
+    // Return the container
+    return container;
+  },
+});
+
+// Add the custom control to the map
+var customControl = new CustomControl();
+customControl.addTo(map);

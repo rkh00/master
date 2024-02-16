@@ -10,3 +10,4 @@ The code I wrote for my Master's Thesis in Geomatics at the NTNU Department of C
 - Add option to calculate population center
 - Sh\*tload of refactotring
 - Add Norway polygon?
+- Add feature to show minimum bounding rectangle?
