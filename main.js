@@ -35,6 +35,18 @@ var selectedCentroid = "moment";
 var kommunenavn;
 var leafletPolygonCenter;
 
+// prettier-ignore
+var centroidTypes = {
+  "moment": "Moment",
+  "area": "Area",
+  "arith_mean": "Arithmetic Mean",
+  "rms": "Root Mean Square",
+  "harmonic": "Harmonic",
+  "geo_mean": "Geometric Mean",
+  "median": "Median",
+  "min_bound": "Minimum Bounding",
+};
+
 async function fetchGeoJSON(nummer) {
   if (nummer.length == 4) {
     apiLink = `https://api.kartverket.no/kommuneinfo/v1/kommuner/${nummer}/omrade`;
@@ -79,9 +91,11 @@ function addCentroidToMap() {
   pointLayer.clearLayers();
   var marker = L.marker([centroid[1], centroid[0]])
     .bindPopup(
-      `<b>Centroid of ${kommunenavn}:</b><br>${centroid[1]}, ${centroid[0]}`
+      `<b>${centroidTypes[selectedCentroid]} Centroid of ${kommunenavn}:</b><br>${centroid[1]}, ${centroid[0]}`
     )
+    .openPopup()
     .addTo(pointLayer);
+  marker.openPopup();
 }
 
 function findCentroid(coordinateArray) {

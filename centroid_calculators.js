@@ -31,28 +31,106 @@ function findAreaCentroid(coordinateArray) {
 }
 
 function findArithmeticMeanCentroid(coordinateArray) {
-  console.log("Not implemented yet!");
-  return;
+  var n = 0;
+  var totLong = 0;
+  var totLat = 0;
+
+  coordinateArray.forEach((polygon) => {
+    n += polygon[0].length;
+    polygon[0].forEach((coordinate) => {
+      totLong += coordinate[0];
+      totLat += coordinate[1];
+    });
+  });
+
+  centroidX = totLong / n;
+  centroidY = totLat / n;
+
+  return [centroidX, centroidY];
 }
 
 function findRootMeanSquareCentroid(coordinateArray) {
-  console.log("Not implemented yet!");
-  return;
+  var n = 0;
+  var totLong = 0;
+  var totLat = 0;
+
+  coordinateArray.forEach((polygon) => {
+    n += polygon[0].length;
+    polygon[0].forEach((coordinate) => {
+      totLong += coordinate[0] ** 2;
+      totLat += coordinate[1] ** 2;
+    });
+  });
+
+  centroidX = Math.sqrt(totLong / n);
+  centroidY = Math.sqrt(totLat / n);
+
+  return [centroidX, centroidY];
 }
 
 function findHarmonicMeanCentroid(coordinateArray) {
-  console.log("Not implemented yet!");
-  return;
+  var n = 0;
+  var totLong = 0;
+  var totLat = 0;
+
+  coordinateArray.forEach((polygon) => {
+    n += polygon[0].length;
+    polygon[0].forEach((coordinate) => {
+      totLong += 1 / coordinate[0];
+      totLat += 1 / coordinate[1];
+    });
+  });
+
+  centroidX = 1 / (totLong / n);
+  centroidY = 1 / (totLat / n);
+
+  return [centroidX, centroidY];
 }
 
 function findGeometricMeanCentroid(coordinateArray) {
-  console.log("Not implemented yet!");
-  return;
+  var n = 0;
+  var totLong = 0;
+  var totLat = 0;
+
+  coordinateArray.forEach((polygon) => {
+    n += polygon[0].length;
+    polygon[0].forEach((coordinate) => {
+      totLong += Math.log(coordinate[0]);
+      totLat += Math.log(coordinate[1]);
+    });
+  });
+
+  centroidX = Math.exp(totLong / n);
+  centroidY = Math.exp(totLat / n);
+
+  return [centroidX, centroidY];
 }
 
 function findMedianCentroid(coordinateArray) {
-  console.log("Not implemented yet!");
-  return;
+  var n = 0;
+  var longs = [];
+  var lats = [];
+
+  coordinateArray.forEach((polygon) => {
+    n += polygon[0].length;
+    polygon[0].forEach((coordinate) => {
+      longs.push(coordinate[0]);
+      lats.push(coordinate[1]);
+    });
+  });
+
+  longs.sort();
+  lats.sort();
+
+  if (n % 2 == 0) {
+    centroidX = (longs[n / 2] + longs[n / 2 + 1]) / 2;
+    centroidY = (lats[n / 2] + lats[n / 2 + 1]) / 2;
+  } else {
+    centroidX = longs[(n + 1) / 2];
+    centroidY = lats[(n + 1) / 2];
+  }
+
+  return [centroidX, centroidY];
 }
 
 function findMinRectangleCentroid(coordinateArray) {
