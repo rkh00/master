@@ -232,7 +232,7 @@ var CustomControl = L.Control.extend({
 
     // Add content to the container
     container.innerHTML = `
-        <b>Select centroid</b>
+        <b>Select centroid:</b>
         <div>
             <input type="radio" id="option1" name="options" value="moment" checked>
             <label for="option1">Moment Centroid</label>
