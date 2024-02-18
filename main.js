@@ -217,7 +217,7 @@ document
 // });
 
 // Define a custom control class by extending L.Control
-var CustomControl = L.Control.extend({
+var CentroidControl = L.Control.extend({
   options: {
     position: "bottomleft", // Position of the control on the map
     collapsed: true,
@@ -225,50 +225,50 @@ var CustomControl = L.Control.extend({
 
   onAdd: function (map) {
     // Create a container element for the control
-    var container = L.DomUtil.create(
+    var centroidSelectorContainer = L.DomUtil.create(
       "div",
       "leaflet-bar leaflet-control custom-control"
     );
 
     // Add content to the container
-    container.innerHTML = `
+    centroidSelectorContainer.innerHTML = `
         <b>Select centroid:</b>
         <div>
-            <input type="radio" id="option1" name="options" value="moment" checked>
-            <label for="option1">Moment Centroid</label>
+            <input type="radio" id="centroid_option1" name="centroidOptions" value="moment" checked>
+            <label for="centroid_option1">Moment Centroid</label>
         </div>
         <div>
-            <input type="radio" id="option2" name="options" value="area">
-            <label for="option2">Area Centroid</label>
+            <input type="radio" id="centroid_option2" name="centroidOptions" value="area">
+            <label for="centroid_option2">Area Centroid</label>
         </div>
         <div>
-            <input type="radio" id="option3" name="options" value="arith_mean">
-            <label for="option2">Arithmetic Mean Centroid</label>
+            <input type="radio" id="centroid_option3" name="centroidOptions" value="arith_mean">
+            <label for="centroid_option3">Arithmetic Mean Centroid</label>
         </div>
         <div>
-            <input type="radio" id="option4" name="options" value="rms">
-            <label for="option2">Root Mean Square Centroid</label>
+            <input type="radio" id="centroid_option4" name="centroidOptions" value="rms">
+            <label for="centroid_option4">Root Mean Square Centroid</label>
         </div>
         <div>
-            <input type="radio" id="option5" name="options" value="harmonic">
-            <label for="option2">Harmonic Mean Centroid</label>
+            <input type="radio" id="centroid_option5" name="centroidOptions" value="harmonic">
+            <label for="centroid_option5">Harmonic Mean Centroid</label>
         </div>
         <div>
-            <input type="radio" id="option6" name="options" value="geo_mean">
-            <label for="option2">Geometric Mean Centroid</label>
+            <input type="radio" id="centroid_option6" name="centroidOptions" value="geo_mean">
+            <label for="centroid_option6">Geometric Mean Centroid</label>
         </div>
         <div>
-            <input type="radio" id="option7" name="options" value="median">
-            <label for="option2">Median Centroid</label>
+            <input type="radio" id="centroid_option7" name="centroidOptions" value="median">
+            <label for="centroid_option7">Median Centroid</label>
         </div>
         <div>
-            <input type="radio" id="option8" name="options" value="min_bound">
-            <label for="option2">Minimum Bounding Centroid</label>
+            <input type="radio" id="centroid_option8" name="centroidOptions" value="min_bound">
+            <label for="centroid_option8">Minimum Bounding Centroid</label>
         </div>
     `;
 
     // Function to handle radio button change
-    function handleRadioChange(event) {
+    function handleCentroidRadioChange(event) {
       // console.log("Selected option:", event.target.value);
       selectedCentroid = event.target.value;
       if (geojsonData != null) {
@@ -278,19 +278,74 @@ var CustomControl = L.Control.extend({
     }
 
     // Attach event listeners to radio buttons
-    var radios = container.querySelectorAll('input[type="radio"]');
-    radios.forEach(function (radio) {
-      radio.addEventListener("change", handleRadioChange);
+    var centroidRadios = centroidSelectorContainer.querySelectorAll(
+      'input[type="radio"]'
+    );
+    centroidRadios.forEach(function (radio) {
+      radio.addEventListener("change", handleCentroidRadioChange);
     });
 
     // Stop propagation of click events to prevent map interaction
-    L.DomEvent.disableClickPropagation(container);
+    L.DomEvent.disableClickPropagation(centroidSelectorContainer);
 
     // Return the container
-    return container;
+    return centroidSelectorContainer;
+  },
+});
+
+var AreaToggle = L.Control.extend({
+  options: {
+    position: "bottomleft", // Position of the control on the map
+    collapsed: true,
+  },
+  onAdd: function (map) {
+    // Create a container element for the control
+    var areaToggleContainer = L.DomUtil.create(
+      "div",
+      "leaflet-bar leaflet-control custom-control"
+    );
+
+    // Add content to the container
+    areaToggleContainer.innerHTML = `
+    <b>Include water area?</b>
+    <div>
+        <input type="radio" id="water_option1" name="waterOptions" value="water_yes">
+        <label for="water_option1">Yes</label>
+    </div>
+    <div>
+        <input type="radio" id="water_option2" name="waterOptions" value="water_no" checked>
+        <label for="water_option2">No</label>
+    </div>
+    `;
+
+    // Function to handle radio button change
+    function handleAreaRadioChange(event) {
+      // console.log("Selected option:", event.target.value);
+      selectedOption = event.target.value;
+      console.log(selectedOption);
+      // Call your custom function here based on the selected option
+    }
+
+    // Attach event listeners to radio buttons
+    var areaRadios = areaToggleContainer.querySelectorAll(
+      'input[type="radio"]'
+    );
+    areaRadios.forEach(function (radio) {
+      radio.addEventListener("change", handleAreaRadioChange);
+    });
+
+    // Stop propagation of click events to prevent map interaction
+    L.DomEvent.disableClickPropagation(areaToggleContainer);
+
+    // Return the container
+    return areaToggleContainer;
   },
 });
 
 // Add the custom control to the map
-var customControl = new CustomControl();
-customControl.addTo(map);
+var centroidControl = new CentroidControl();
+centroidControl.addTo(map);
+
+// Add the custom control to the map
+var areaToggle = new AreaToggle();
+areaToggle.addTo(map);
