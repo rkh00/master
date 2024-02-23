@@ -239,7 +239,7 @@ var CentroidControl = L.Control.extend({
         </div>
         <div>
             <input type="radio" id="centroid_option2" name="centroidOptions" value="area">
-            <label for="centroid_option2">Area Centroid</label>
+            <label for="centroid_option2">Area Centroid (Not yet implemented)</label>
         </div>
         <div>
             <input type="radio" id="centroid_option3" name="centroidOptions" value="arith_mean">
@@ -307,7 +307,7 @@ var AreaToggle = L.Control.extend({
 
     // Add content to the container
     areaToggleContainer.innerHTML = `
-    <b>Include water area?</b>
+    <b>Include water area? (Not yet implemented)</b>
     <div>
         <input type="radio" id="water_option1" name="waterOptions" value="water_yes">
         <label for="water_option1">Yes</label>

@@ -2,6 +2,8 @@
 
 The code I wrote for my Master's Thesis in Geomatics at the NTNU Department of Civil Engineering in the spring of 2024.
 
+Centroid Locator is currently in development and is available [on Github Pages](https://rkh00.github.io/master/).
+
 ### TODO:
 
 - Add area centroid
