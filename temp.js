@@ -1,5 +1,13 @@
-fetch(
-  "https://nedlasting.geonorge.no/api/capabilities/041f1e6e-bdbc-4091-b48f-8a5990f3cc5b"
-)
-  .then((response) => response.json())
-  .then((json) => console.log(json));
+fetch("https://api.example.com/data")
+  .then((response) => {
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+    return response.json();
+  })
+  .then((data) => {
+    console.log(data);
+  })
+  .catch((error) => {
+    console.error("There was a problem with the fetch operation:", error);
+  });

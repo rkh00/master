@@ -349,3 +349,5 @@ centroidControl.addTo(map);
 // Add the custom control to the map
 var areaToggle = new AreaToggle();
 areaToggle.addTo(map);
+
+// getData();
