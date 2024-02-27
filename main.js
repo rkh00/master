@@ -350,4 +350,4 @@ centroidControl.addTo(map);
 var areaToggle = new AreaToggle();
 areaToggle.addTo(map);
 
-// getData();
+getData();
