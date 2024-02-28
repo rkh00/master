@@ -32,7 +32,7 @@ var layerControl = L.control
 
 var geojsonData;
 var selectedCentroid = "moment";
-var kommunenavn;
+var polygonName;
 var leafletPolygonCenter;
 
 // prettier-ignore
@@ -70,7 +70,11 @@ async function fetchGeoJSON(nummer) {
 
 async function addGeoJSONToMap(nummer) {
   await fetchGeoJSON(nummer);
-  kommunenavn = geojsonData.kommunenavn;
+  if (geojsonData.kommunenavn) {
+    polygonName = geojsonData.kommunenavn;
+  } else if (geojsonData.fylkesnavn) {
+    polygonName = geojsonData.fylkesnavn;
+  }
   var coordinates = geojsonData.omrade.coordinates;
   delete geojsonData.crs;
   delete geojsonData.omrade;
@@ -91,7 +95,7 @@ function addCentroidToMap() {
   pointLayer.clearLayers();
   var marker = L.marker([centroid[1], centroid[0]])
     .bindPopup(
-      `<b>${centroidTypes[selectedCentroid]} Centroid of ${kommunenavn}:</b><br>${centroid[1]}, ${centroid[0]}`
+      `<b>${centroidTypes[selectedCentroid]} Centroid of ${polygonName}:</b><br>${centroid[1]}, ${centroid[0]}`
     )
     .openPopup()
     .addTo(pointLayer);
