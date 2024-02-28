@@ -350,4 +350,19 @@ centroidControl.addTo(map);
 var areaToggle = new AreaToggle();
 areaToggle.addTo(map);
 
-getData();
+async function getData() {
+  try {
+    const response = await fetch(
+      "https://nedlasting.geonorge.no/api/capabilities/73f863ba-628f-48af-b7fa-30d3ab331b8d",
+      { mode: "no-cors" }
+    );
+    if (!response.ok) {
+      throw new Error("Failed to fetch GeoJSON data");
+    }
+    var testData = await response.json();
+    console.log(testData);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+  return;
+}
