@@ -32,6 +32,8 @@ var layerControl = L.control
 
 var geojsonData;
 var selectedCentroid = "moment";
+var selectedOption = "yes";
+var selectedCoordsys = "4258";
 var polygonName;
 var leafletPolygonCenter;
 
@@ -49,9 +51,9 @@ var centroidTypes = {
 
 async function fetchGeoJSON(nummer) {
   if (nummer.length == 4) {
-    apiLink = `https://api.kartverket.no/kommuneinfo/v1/kommuner/${nummer}/omrade`;
+    apiLink = `https://api.kartverket.no/kommuneinfo/v1/kommuner/${nummer}/omrade?utkoordsys=${selectedCoordsys}`;
   } else if (nummer.length == 2) {
-    apiLink = `https://api.kartverket.no/kommuneinfo/v1/fylker/${nummer}/omrade`;
+    apiLink = `https://api.kartverket.no/kommuneinfo/v1/fylker/${nummer}/omrade?utkoordsys=${selectedCoordsys}`;
   } else {
     console.error("Unknown error.");
     return;
@@ -313,21 +315,18 @@ var AreaToggle = L.Control.extend({
     areaToggleContainer.innerHTML = `
     <b>Include water area? (Not yet implemented)</b>
     <div>
-        <input type="radio" id="water_option1" name="waterOptions" value="water_yes">
+        <input type="radio" id="water_option1" name="waterOptions" value="water_yes" checked>
         <label for="water_option1">Yes</label>
     </div>
     <div>
-        <input type="radio" id="water_option2" name="waterOptions" value="water_no" checked>
+        <input type="radio" id="water_option2" name="waterOptions" value="water_no">
         <label for="water_option2">No</label>
     </div>
     `;
 
     // Function to handle radio button change
     function handleAreaRadioChange(event) {
-      // console.log("Selected option:", event.target.value);
       selectedOption = event.target.value;
-      console.log(selectedOption);
-      // Call your custom function here based on the selected option
     }
 
     // Attach event listeners to radio buttons
@@ -346,6 +345,65 @@ var AreaToggle = L.Control.extend({
   },
 });
 
+var CoordsysSelector = L.Control.extend({
+  options: {
+    position: "bottomright", // Position of the control on the map
+    collapsed: true,
+  },
+  onAdd: function (map) {
+    // Create a container element for the control
+    var coordsysSelectorContainer = L.DomUtil.create(
+      "div",
+      "leaflet-bar leaflet-control custom-control"
+    );
+
+    // Add content to the container
+    coordsysSelectorContainer.innerHTML = `
+    <form id="coordsysForm">
+    <b>Choose coordinate system (default EPSG:4258)</b><br>(Only if you know what you're doing)
+    <br>
+        <label for="coordsys_picker">EPSG:</label>
+        <input type="text" id="coordsys_picker" name="coordsysPicker">
+        <input type="button" value="Submit">
+    </form>
+    `;
+
+    coordsysSelectorContainer.onclick = function (event) {
+      L.DomEvent.stopPropagation(event);
+    };
+
+    // Function to handle radio button change
+    function handleCoordsysChange(event) {
+      event.preventDefault();
+      selectedCoordsys = event.target.value;
+    }
+
+    // var coordsysForm = coordsysSelectorContainer.querySelectorAll(
+    //   'input[type="submit"]'
+    // );
+    // coordsysForm.forEach(function (submit) {
+    //   submit.addEventListener("submit", handleCoordsysChange);
+    // });
+
+    // var coordsysForm = document.getElementById("coordsysForm");
+    // coordsysForm.addEventListener("submit", handleCoordsysChange);
+
+    // // Attach event listeners to radio buttons
+    // var coordsysSubmit = coordsysSelectorContainer.querySelectorAll(
+    //   'input[type="submit"]'
+    // );
+    // coordsysSubmit.forEach(function (submit) {
+    //   submit.addEventListener("submit", handleCoordsysChange);
+    // });
+
+    // Stop propagation of click events to prevent map interaction
+    L.DomEvent.disableClickPropagation(coordsysSelectorContainer);
+
+    // Return the container
+    return coordsysSelectorContainer;
+  },
+});
+
 // Add the custom control to the map
 var centroidControl = new CentroidControl();
 centroidControl.addTo(map);
@@ -353,6 +411,9 @@ centroidControl.addTo(map);
 // Add the custom control to the map
 var areaToggle = new AreaToggle();
 areaToggle.addTo(map);
+
+var coordsysSelector = new CoordsysSelector();
+coordsysSelector.addTo(map);
 
 async function getData() {
   try {
