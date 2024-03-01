@@ -13,3 +13,4 @@ Centroid Locator is currently in development and is available [on Github Pages](
 - Sh\*tload of refactotring
 - Add Norway polygon?
 - Add feature to show minimum bounding rectangle?
+- Add conversion of coordinate systems?

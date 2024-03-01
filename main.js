@@ -37,6 +37,7 @@ var selectedCoordsys = "4258";
 var polygonNumber;
 var polygonName;
 var leafletPolygonCenter;
+var selectedMode;
 
 // prettier-ignore
 var centroidTypes = {
@@ -302,6 +303,57 @@ var CentroidControl = L.Control.extend({
   },
 });
 
+var ModeControl = L.Control.extend({
+  options: {
+    position: "bottomleft", // Position of the control on the map
+    collapsed: true,
+  },
+  onAdd: function (map) {
+    // Create a container element for the control
+    var modeControlContainer = L.DomUtil.create(
+      "div",
+      "leaflet-bar leaflet-control custom-control"
+    );
+
+    // Add content to the container
+    modeControlContainer.innerHTML = `
+    <b>Select mode (Not yet implemented)</b>
+    <div>
+        <input type="radio" id="mode_option1" name="modeOptions" value="terrainless" checked>
+        <label for="mode_option1">Terrainless (2D)</label>
+    </div>
+    <div>
+        <input type="radio" id="mode_option2" name="modeOptions" value="terrain">
+        <label for="mode_option2">Terrain (3D)</label>
+    </div>
+    <div>
+        <input type="radio" id="mode_option3" name="modeOptions" value="population">
+        <label for="mode_option3">Population</label>
+    </div>
+    `;
+
+    // Function to handle radio button change
+    function handleModeChange(event) {
+      selectedMode = event.target.value;
+      updateAreaToggleVisibility();
+    }
+
+    // Attach event listeners to radio buttons
+    var modeController = modeControlContainer.querySelectorAll(
+      'input[type="radio"]'
+    );
+    modeController.forEach(function (radio) {
+      radio.addEventListener("change", handleModeChange);
+    });
+
+    // Stop propagation of click events to prevent map interaction
+    L.DomEvent.disableClickPropagation(modeControlContainer);
+
+    // Return the container
+    return modeControlContainer;
+  },
+});
+
 var AreaToggle = L.Control.extend({
   options: {
     position: "bottomleft", // Position of the control on the map
@@ -429,12 +481,23 @@ var CoordsysSelector = L.Control.extend({
 var centroidControl = new CentroidControl();
 centroidControl.addTo(map);
 
+var modeControl = new ModeControl();
+modeControl.addTo(map);
+
 // Add the custom control to the map
 var areaToggle = new AreaToggle();
 areaToggle.addTo(map);
 
 var coordsysSelector = new CoordsysSelector();
 coordsysSelector.addTo(map);
+
+function updateAreaToggleVisibility() {
+  if (selectedMode == "terrainless") {
+    map.addControl(areaToggle);
+  } else {
+    map.removeControl(areaToggle);
+  }
+}
 
 async function getData() {
   try {
