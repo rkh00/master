@@ -34,6 +34,7 @@ var geojsonData;
 var selectedCentroid = "moment";
 var selectedOption = "yes";
 var selectedCoordsys = "4258";
+var polygonNumber;
 var polygonName;
 var leafletPolygonCenter;
 
@@ -170,6 +171,7 @@ function displayResults(results1, results2) {
       resultElement.textContent = result.navn;
       resultElement.addEventListener("click", () => {
         addGeoJSONToMap(result.nummer, result.navn);
+        polygonNumber = result.nummer;
         document.getElementById("searchInput").value = "";
         resultsContainer.style.display = "none";
       });
@@ -190,6 +192,7 @@ function displayResults(results1, results2) {
       resultElement.textContent = result.navn;
       resultElement.addEventListener("click", () => {
         addGeoJSONToMap(result.nummer, result.navn);
+        polygonNumber = result.nummer;
         document.getElementById("searchInput").value = "";
         resultsContainer.style.display = "none";
       });
@@ -345,6 +348,14 @@ var AreaToggle = L.Control.extend({
   },
 });
 
+function handleFormSubmit(event) {
+  event.preventDefault();
+  var coordsysPicker = document.getElementById("coordsys_picker");
+  selectedCoordsys = coordsysPicker.value;
+  coordsysPicker.value = "";
+  addGeoJSONToMap(polygonNumber);
+}
+
 var CoordsysSelector = L.Control.extend({
   options: {
     position: "bottomright", // Position of the control on the map
@@ -364,7 +375,7 @@ var CoordsysSelector = L.Control.extend({
     <br>
         <label for="coordsys_picker">EPSG:</label>
         <input type="text" id="coordsys_picker" name="coordsysPicker">
-        <input type="button" value="Submit">
+        <input type="button" value="Submit" onclick="handleFormSubmit(event)">
     </form>
     `;
 
@@ -372,11 +383,21 @@ var CoordsysSelector = L.Control.extend({
       L.DomEvent.stopPropagation(event);
     };
 
+    // function handleFormSubmit(event) {
+    //   event.preventDefault();
+    //   selectedCoordsys = document.getElementById("coordsys_picker").value;
+    //   handleCoordsysChange(selectedCoordsys);
+    // }
+
+    // var form = document.querySelector("#coordsysForm");
+    // form.addEventListener("submit", handleFormSubmit);
+
     // Function to handle radio button change
-    function handleCoordsysChange(event) {
-      event.preventDefault();
-      selectedCoordsys = event.target.value;
-    }
+    // function handleCoordsysChange(event) {
+    //   event.preventDefault();
+    //   // selectedCoordsys = event.target.value;
+    //   console.log("hello");
+    // }
 
     // var coordsysForm = coordsysSelectorContainer.querySelectorAll(
     //   'input[type="submit"]'
