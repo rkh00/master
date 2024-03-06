@@ -52,9 +52,6 @@ var centroidTypes = {
 };
 
 async function fetchGeoJSON(nummer) {
-  console.log(nummer.length);
-  console.log(water);
-
   const switchValue = `${nummer.length}_${water}`;
   switch (switchValue) {
     case "4_true":
@@ -64,14 +61,22 @@ async function fetchGeoJSON(nummer) {
       apiLink = `https://api.kartverket.no/kommuneinfo/v1/fylker/${nummer}/omrade?utkoordsys=${selectedCoordsys}`;
       break;
     case "4_false":
-      apiLink =
-        "https://cors-anywhere.herokuapp.com/https://ogcapi-stemmekretser.kartverket.no/collections/kommuner/items/efe40656-9764-4926-ac55-d04d4665f3ef309adcd6ebb29b25f943202101bd25629c640705329b831e6dbc530e29ed428c?f=json&lang=nb-NO";
-      console.log("hei");
+      for (var i = 0; i < kommuneFeatureIds.length; i++) {
+        if (kommuneFeatureIds[i].nummer === nummer) {
+          featureId = kommuneFeatureIds[i].featureId;
+          break;
+        }
+      }
+      apiLink = `https://cors-anywhere.herokuapp.com/https://ogcapi-stemmekretser.kartverket.no/collections/kommuner/items/${featureId}?f=json&lang=nb-NO`;
       break;
     case "2_false":
-      apiLink =
-        "https://cors-anywhere.herokuapp.com/https://ogcapi-stemmekretser.kartverket.no/collections/kommuner/items/198eef71-90ea-47f4-acd3-1e21b80e39a3?f=json&lang=nb-NO";
-      console.log("hallo");
+      for (var i = 0; i < fylkeFeatureIds.length; i++) {
+        if (fylkeFeatureIds[i].nummer === nummer) {
+          featureId = fylkeFeatureIds[i].featureId;
+          break;
+        }
+      }
+      apiLink = `https://cors-anywhere.herokuapp.com/https://ogcapi-stemmekretser.kartverket.no/collections/fylker/items/${featureId}?f=json&lang=nb-NO`;
       break;
     default:
       console.error("Unknown error.");
@@ -92,7 +97,7 @@ async function fetchGeoJSON(nummer) {
 async function addGeoJSONToMap(nummer) {
   await fetchGeoJSON(nummer);
   polygonLayer.clearLayers();
-  if (water) {
+  if (water == true) {
     if (geojsonData.kommunenavn) {
       polygonName = geojsonData.kommunenavn;
     } else if (geojsonData.fylkesnavn) {
@@ -297,7 +302,6 @@ var CentroidControl = L.Control.extend({
 
     // Function to handle radio button change
     function handleCentroidRadioChange(event) {
-      // console.log("Selected option:", event.target.value);
       selectedCentroid = event.target.value;
       if (geojsonData != null) {
         addCentroidToMap();
