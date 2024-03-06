@@ -32,7 +32,7 @@ var layerControl = L.control
 
 var geojsonData;
 var selectedCentroid = "moment";
-var selectedOption = "yes";
+var water = true;
 var selectedCoordsys = "4258";
 var polygonNumber;
 var polygonName;
@@ -52,17 +52,34 @@ var centroidTypes = {
 };
 
 async function fetchGeoJSON(nummer) {
-  if (nummer.length == 4) {
-    apiLink = `https://api.kartverket.no/kommuneinfo/v1/kommuner/${nummer}/omrade?utkoordsys=${selectedCoordsys}`;
-  } else if (nummer.length == 2) {
-    apiLink = `https://api.kartverket.no/kommuneinfo/v1/fylker/${nummer}/omrade?utkoordsys=${selectedCoordsys}`;
-  } else {
-    console.error("Unknown error.");
-    return;
+  console.log(nummer.length);
+  console.log(water);
+
+  const switchValue = `${nummer.length}_${water}`;
+  switch (switchValue) {
+    case "4_true":
+      apiLink = `https://api.kartverket.no/kommuneinfo/v1/kommuner/${nummer}/omrade?utkoordsys=${selectedCoordsys}`;
+      break;
+    case "2_true":
+      apiLink = `https://api.kartverket.no/kommuneinfo/v1/fylker/${nummer}/omrade?utkoordsys=${selectedCoordsys}`;
+      break;
+    case "4_false":
+      apiLink =
+        "https://cors-anywhere.herokuapp.com/https://ogcapi-stemmekretser.kartverket.no/collections/kommuner/items/efe40656-9764-4926-ac55-d04d4665f3ef309adcd6ebb29b25f943202101bd25629c640705329b831e6dbc530e29ed428c?f=json&lang=nb-NO";
+      console.log("hei");
+      break;
+    case "2_false":
+      apiLink =
+        "https://cors-anywhere.herokuapp.com/https://ogcapi-stemmekretser.kartverket.no/collections/kommuner/items/198eef71-90ea-47f4-acd3-1e21b80e39a3?f=json&lang=nb-NO";
+      console.log("hallo");
+      break;
+    default:
+      console.error("Unknown error.");
   }
   try {
     const response = await fetch(apiLink);
     if (!response.ok) {
+      console.log(response);
       throw new Error("Failed to fetch GeoJSON data");
     }
     geojsonData = await response.json();
@@ -74,18 +91,19 @@ async function fetchGeoJSON(nummer) {
 
 async function addGeoJSONToMap(nummer) {
   await fetchGeoJSON(nummer);
-  if (geojsonData.kommunenavn) {
-    polygonName = geojsonData.kommunenavn;
-  } else if (geojsonData.fylkesnavn) {
-    polygonName = geojsonData.fylkesnavn;
-  }
-  var coordinates = geojsonData.omrade.coordinates;
-  delete geojsonData.crs;
-  delete geojsonData.omrade;
-  geojsonData.coordinates = coordinates;
-  geojsonData.type = "MultiPolygon";
-
   polygonLayer.clearLayers();
+  if (water) {
+    if (geojsonData.kommunenavn) {
+      polygonName = geojsonData.kommunenavn;
+    } else if (geojsonData.fylkesnavn) {
+      polygonName = geojsonData.fylkesnavn;
+    }
+    var coordinates = geojsonData.omrade.coordinates;
+    delete geojsonData.crs;
+    delete geojsonData.omrade;
+    geojsonData.coordinates = coordinates;
+    geojsonData.type = "MultiPolygon";
+  }
   polygonLayer.addData(geojsonData);
 
   map.fitBounds(polygonLayer.getBounds());
@@ -221,10 +239,10 @@ document
   });
 
 // TODO: Enter key press when only one result brings user straight to only result
-// document.getElementById("searchInput").addEventListener("keydown", (event) => {
-//   if (event.keyCode !== 13) return;
-//   handleEnterKeyPress();
-// });
+document.getElementById("searchInput").addEventListener("keydown", (event) => {
+  if (event.keyCode !== 13) return;
+  handleEnterKeyPress();
+});
 
 // Define a custom control class by extending L.Control
 var CentroidControl = L.Control.extend({
@@ -370,18 +388,18 @@ var AreaToggle = L.Control.extend({
     areaToggleContainer.innerHTML = `
     <b>Include water area? (Not yet implemented)</b>
     <div>
-        <input type="radio" id="water_option1" name="waterOptions" value="water_yes" checked>
+        <input type="radio" id="water_option1" name="waterOptions" value="true" checked>
         <label for="water_option1">Yes</label>
     </div>
     <div>
-        <input type="radio" id="water_option2" name="waterOptions" value="water_no">
+        <input type="radio" id="water_option2" name="waterOptions" value="false">
         <label for="water_option2">No</label>
     </div>
     `;
 
     // Function to handle radio button change
     function handleAreaRadioChange(event) {
-      selectedOption = event.target.value;
+      water = event.target.value;
     }
 
     // Attach event listeners to radio buttons
@@ -435,40 +453,6 @@ var CoordsysSelector = L.Control.extend({
       L.DomEvent.stopPropagation(event);
     };
 
-    // function handleFormSubmit(event) {
-    //   event.preventDefault();
-    //   selectedCoordsys = document.getElementById("coordsys_picker").value;
-    //   handleCoordsysChange(selectedCoordsys);
-    // }
-
-    // var form = document.querySelector("#coordsysForm");
-    // form.addEventListener("submit", handleFormSubmit);
-
-    // Function to handle radio button change
-    // function handleCoordsysChange(event) {
-    //   event.preventDefault();
-    //   // selectedCoordsys = event.target.value;
-    //   console.log("hello");
-    // }
-
-    // var coordsysForm = coordsysSelectorContainer.querySelectorAll(
-    //   'input[type="submit"]'
-    // );
-    // coordsysForm.forEach(function (submit) {
-    //   submit.addEventListener("submit", handleCoordsysChange);
-    // });
-
-    // var coordsysForm = document.getElementById("coordsysForm");
-    // coordsysForm.addEventListener("submit", handleCoordsysChange);
-
-    // // Attach event listeners to radio buttons
-    // var coordsysSubmit = coordsysSelectorContainer.querySelectorAll(
-    //   'input[type="submit"]'
-    // );
-    // coordsysSubmit.forEach(function (submit) {
-    //   submit.addEventListener("submit", handleCoordsysChange);
-    // });
-
     // Stop propagation of click events to prevent map interaction
     L.DomEvent.disableClickPropagation(coordsysSelectorContainer);
 
@@ -497,21 +481,4 @@ function updateAreaToggleVisibility() {
   } else {
     map.removeControl(areaToggle);
   }
-}
-
-async function getData() {
-  try {
-    const response = await fetch(
-      "https://nedlasting.geonorge.no/api/capabilities/73f863ba-628f-48af-b7fa-30d3ab331b8d",
-      { mode: "no-cors" }
-    );
-    if (!response.ok) {
-      throw new Error("Failed to fetch GeoJSON data");
-    }
-    var testData = await response.json();
-    console.log(testData);
-  } catch (error) {
-    console.error("Error fetching data:", error);
-  }
-  return;
 }
