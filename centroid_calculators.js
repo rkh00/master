@@ -1,4 +1,4 @@
-function findMomentCentroid(coordinateArray, leafletPolygonCenter) {
+function findMomentCentroid(coordinateArray) {
   var xSum = 0;
   var ySum = 0;
   var area = 0;

@@ -51,8 +51,25 @@ var centroidTypes = {
   "min_bound": "Minimum Bounding",
 };
 
+function getNameFromNumber(nummer) {
+  if (nummer.length == 4) {
+    for (var i = 0; i < kommuneList.length; i++) {
+      if (kommuneList[i].nummer == nummer) {
+        return kommuneList[i].navn;
+      }
+    }
+  } else if (nummer.length == 2) {
+    for (var i = 0; i < fylkeList.length; i++) {
+      if (fylkeList[i].nummer == nummer) {
+        return fylkeList[i].navn;
+      }
+    }
+  }
+}
+
 async function fetchGeoJSON(nummer) {
   const switchValue = `${nummer.length}_${water}`;
+  polygonName = getNameFromNumber(nummer);
   switch (switchValue) {
     case "4_true":
       apiLink = `https://api.kartverket.no/kommuneinfo/v1/kommuner/${nummer}/omrade?utkoordsys=${selectedCoordsys}`;
@@ -98,17 +115,12 @@ async function addGeoJSONToMap(nummer) {
   await fetchGeoJSON(nummer);
   polygonLayer.clearLayers();
   if (water == true) {
-    if (geojsonData.kommunenavn) {
-      polygonName = geojsonData.kommunenavn;
-    } else if (geojsonData.fylkesnavn) {
-      polygonName = geojsonData.fylkesnavn;
-    }
     var coordinates = geojsonData.omrade.coordinates;
-    delete geojsonData.crs;
-    delete geojsonData.omrade;
-    geojsonData.coordinates = coordinates;
-    geojsonData.type = "MultiPolygon";
+  } else {
+    var coordinates = geojsonData.geometry.coordinates;
   }
+  geojsonData.coordinates = coordinates;
+  geojsonData.type = "MultiPolygon";
   polygonLayer.addData(geojsonData);
 
   map.fitBounds(polygonLayer.getBounds());
@@ -132,7 +144,7 @@ function addCentroidToMap() {
 function findCentroid(coordinateArray) {
   switch (selectedCentroid) {
     case "moment":
-      return findMomentCentroid(coordinateArray, leafletPolygonCenter);
+      return findMomentCentroid(coordinateArray);
     case "area":
       return findAreaCentroid(coordinateArray);
     case "arith_mean":
@@ -403,7 +415,11 @@ var AreaToggle = L.Control.extend({
 
     // Function to handle radio button change
     function handleAreaRadioChange(event) {
-      water = event.target.value;
+      if (event.target.value == "true") {
+        water = true;
+      } else {
+        water = false;
+      }
     }
 
     // Attach event listeners to radio buttons
