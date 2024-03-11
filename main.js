@@ -116,11 +116,18 @@ async function addGeoJSONToMap(nummer) {
   polygonLayer.clearLayers();
   if (water == true) {
     var coordinates = geojsonData.omrade.coordinates;
+    geojsonData.type = "MultiPolygon";
   } else {
-    var coordinates = geojsonData.geometry.coordinates;
+    if (geojsonData.geometry.type == "MultiPolygon") {
+      var coordinates = geojsonData.geometry.coordinates;
+    } else {
+      var coordinates = [geojsonData.geometry.coordinates];
+      geojsonData.type = "MultiPolygon";
+    }
   }
   geojsonData.coordinates = coordinates;
-  geojsonData.type = "MultiPolygon";
+  // geojsonData.type = "MultiPolygon";
+  console.log(geojsonData);
   polygonLayer.addData(geojsonData);
 
   map.fitBounds(polygonLayer.getBounds());
