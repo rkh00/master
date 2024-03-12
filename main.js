@@ -4,7 +4,7 @@ var map = L.map("map").setView([63.990556, 12.307778], 8);
 var osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   maxZoom: 19,
   attribution:
-    '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> | Overlaid data from <a href="https://www.geonorge.no/">Geonorge</a>',
 }).addTo(map);
 
 var marker = L.marker([63.990556, 12.307778]).addTo(map);
@@ -126,8 +126,6 @@ async function addGeoJSONToMap(nummer) {
     }
   }
   geojsonData.coordinates = coordinates;
-  // geojsonData.type = "MultiPolygon";
-  console.log(geojsonData);
   polygonLayer.addData(geojsonData);
 
   map.fitBounds(polygonLayer.getBounds());
@@ -358,18 +356,18 @@ var ModeControl = L.Control.extend({
 
     // Add content to the container
     modeControlContainer.innerHTML = `
-    <b>Select mode (Not yet implemented)</b>
+    <b>Select mode</b>
     <div>
         <input type="radio" id="mode_option1" name="modeOptions" value="terrainless" checked>
         <label for="mode_option1">Terrainless (2D)</label>
     </div>
     <div>
         <input type="radio" id="mode_option2" name="modeOptions" value="terrain">
-        <label for="mode_option2">Terrain (3D)</label>
+        <label for="mode_option2">Terrain (3D) (Not yet implemented)</label>
     </div>
     <div>
         <input type="radio" id="mode_option3" name="modeOptions" value="population">
-        <label for="mode_option3">Population</label>
+        <label for="mode_option3">Population (Not yet implemented)</label>
     </div>
     `;
 
@@ -409,14 +407,14 @@ var AreaToggle = L.Control.extend({
 
     // Add content to the container
     areaToggleContainer.innerHTML = `
-    <b>Include water area? (Not yet implemented)</b>
+    <b>Include water area?</b>
     <div>
         <input type="radio" id="water_option1" name="waterOptions" value="true" checked>
         <label for="water_option1">Yes</label>
     </div>
     <div>
         <input type="radio" id="water_option2" name="waterOptions" value="false">
-        <label for="water_option2">No</label>
+        <label for="water_option2">No (Not yet implemented)</label>
     </div>
     `;
 
