@@ -7,8 +7,8 @@ Centroid Locator is currently in development and is available [on Github Pages](
 ### TODO:
 
 - Add area centroid
-- Add option to include terrain in calculation
-- Add option to calculate population center
+- ~~Add option to include terrain in calculation~~ nvm this is stupidly difficult
+- ~~Add option to calculate population center~~ see previous
 - Sh\*tload of refactotring
 - Add Norway polygon?
 - Add feature to show minimum bounding rectangle?
