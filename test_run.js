@@ -316,7 +316,7 @@ const large_county = ["Finnmark – Finnmárku – Finmarkku"];
 const coastal_county = ["Vestland"];
 const inland_county = ["Innlandet"];
 
-const selectedCoordsys = "4258";
+const selectedCoordsys = "25835";
 var water = false;
 
 function getNameFromNumber(nummer) {
@@ -351,15 +351,15 @@ function getNumberFromName(navn) {
 }
 
 async function fetchGeoJSON(nummer) {
-  var apiLink;
+  //   var apiLink;
   const switchValue = `${nummer.length}_${water}`;
   //   console.log(switchValue);
   switch (switchValue) {
     case "4_true":
-      apiLink = `https://api.kartverket.no/kommuneinfo/v1/kommuner/${nummer}/omrade?utkoordsys=${selectedCoordsys}`;
+      var apiLink = `https://api.kartverket.no/kommuneinfo/v1/kommuner/${nummer}/omrade?utkoordsys=${selectedCoordsys}`;
       break;
     case "2_true":
-      apiLink = `https://api.kartverket.no/kommuneinfo/v1/fylker/${nummer}/omrade?utkoordsys=${selectedCoordsys}`;
+      var apiLink = `https://api.kartverket.no/kommuneinfo/v1/fylker/${nummer}/omrade?utkoordsys=${selectedCoordsys}`;
       break;
     case "4_false":
       for (var i = 0; i < kommuneFeatureIds.length; i++) {
@@ -368,7 +368,7 @@ async function fetchGeoJSON(nummer) {
           break;
         }
       }
-      apiLink = `https://cors-anywhere.herokuapp.com/https://ogcapi-stemmekretser.kartverket.no/collections/kommuner/items/${featureId}?f=json&lang=nb-NO`;
+      var apiLink = `https://ogcapi-stemmekretser.kartverket.no/collections/kommuner/items/${featureId}?crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FEPSG%2F0%2F${selectedCoordsys}&f=json&lang=nb-NO`;
       break;
     case "2_false":
       for (var i = 0; i < fylkeFeatureIds.length; i++) {
@@ -377,7 +377,7 @@ async function fetchGeoJSON(nummer) {
           break;
         }
       }
-      apiLink = `https://cors-anywhere.herokuapp.com/https://ogcapi-stemmekretser.kartverket.no/collections/fylker/items/${featureId}?f=json&lang=nb-NO`;
+      var apiLink = `https://ogcapi-stemmekretser.kartverket.no/collections/fylker/items/${featureId}?crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FEPSG%2F0%2F${selectedCoordsys}&f=json&lang=nb-NO`;
       break;
     default:
       console.error("Unknown error.");
@@ -444,7 +444,7 @@ async function processData() {
   // Your existing code
 
   // Iterate over the small_municipalities array using a for loop
-  for (const subdiv of small_municipalities) {
+  for (const subdiv of inland_county) {
     var nummer = getNumberFromName(subdiv);
     // console.log(nummer);
     var geojsonData = await fetchGeoJSON(nummer);
@@ -493,13 +493,17 @@ async function processData() {
 
   // Wrap the writeFile function in a Promise to use async/await
   return new Promise((resolve, reject) => {
-    fs.writeFile(`small_munic_${water}_${selectedCoordsys}.csv`, csv, (err) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve();
+    fs.writeFile(
+      `inland_county_${water}_${selectedCoordsys}.csv`,
+      csv,
+      (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
       }
-    });
+    );
   });
 }
 

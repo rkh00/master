@@ -84,7 +84,7 @@ async function fetchGeoJSON(nummer) {
           break;
         }
       }
-      apiLink = `https://cors-anywhere.herokuapp.com/https://ogcapi-stemmekretser.kartverket.no/collections/kommuner/items/${featureId}?f=json&lang=nb-NO`;
+      apiLink = `https://ogcapi-stemmekretser.kartverket.no/collections/kommuner/items/${featureId}?crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FEPSG%2F0%2F${selectedCoordsys}&f=json&lang=nb-NO`;
       break;
     case "2_false":
       for (var i = 0; i < fylkeFeatureIds.length; i++) {
@@ -93,7 +93,7 @@ async function fetchGeoJSON(nummer) {
           break;
         }
       }
-      apiLink = `https://cors-anywhere.herokuapp.com/https://ogcapi-stemmekretser.kartverket.no/collections/fylker/items/${featureId}?f=json&lang=nb-NO`;
+      apiLink = `https://ogcapi-stemmekretser.kartverket.no/collections/fylker/items/${featureId}?crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FEPSG%2F0%2F${selectedCoordsys}&f=json&lang=nb-NO`;
       break;
     default:
       console.error("Unknown error.");
