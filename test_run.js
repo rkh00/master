@@ -1,3 +1,4 @@
+import { create } from "domain";
 import fs from "fs";
 
 function findMomentCentroid(coordinateArray) {
@@ -89,17 +90,27 @@ function findGeometricMeanCentroid(coordinateArray) {
   var n = 0;
   var totLong = 0;
   var totLat = 0;
+  var n_neg_longs = 0;
+  var n_neg_lats = 0;
 
   coordinateArray.forEach((polygon) => {
     n += polygon[0].length;
     polygon[0].forEach((coordinate) => {
-      totLong += Math.log(coordinate[0]);
-      totLat += Math.log(coordinate[1]);
+      if (coordinate[0] < 0) {
+        n_neg_longs++;
+      }
+      totLong += Math.log(Math.abs(coordinate[0]));
+      if (coordinate[1] < 0) {
+        n_neg_lats++;
+      }
+      totLat += Math.log(Math.abs(coordinate[1]));
     });
   });
 
-  var centroidX = Math.exp(totLong / n);
-  var centroidY = Math.exp(totLat / n);
+  var centroidX =
+    Math.exp(totLong / n) * Math.pow(Math.pow(-1, n_neg_longs), 1 / n);
+  var centroidY =
+    Math.exp(totLat / n) * Math.pow(Math.pow(-1, n_neg_lats), 1 / n);
 
   return [centroidX, centroidY];
 }
@@ -316,7 +327,23 @@ const large_county = ["Finnmark – Finnmárku – Finmarkku"];
 const coastal_county = ["Vestland"];
 const inland_county = ["Innlandet"];
 
-const selectedCoordsys = "25835";
+const all_subdivs = [
+  small_municipalities,
+  large_municipalities,
+  coastal_municipalities,
+  inland_municipalities,
+  small_county,
+  large_county,
+  coastal_county,
+  inland_county,
+];
+
+const water_coordsys = ["4258", "32632", "32633", "32635"];
+const no_water_coordsys = ["4258", "25832", "25833", "25835"];
+
+const water_statuses = [true, false];
+
+var selectedCoordsys = "25835";
 var water = false;
 
 function getNameFromNumber(nummer) {
@@ -353,7 +380,8 @@ function getNumberFromName(navn) {
 async function fetchGeoJSON(nummer) {
   //   var apiLink;
   const switchValue = `${nummer.length}_${water}`;
-  //   console.log(switchValue);
+  console.log(switchValue);
+  console.log(selectedCoordsys);
   switch (switchValue) {
     case "4_true":
       var apiLink = `https://api.kartverket.no/kommuneinfo/v1/kommuner/${nummer}/omrade?utkoordsys=${selectedCoordsys}`;
@@ -435,79 +463,90 @@ var data = [
   ],
 ];
 
+async function create_datapoint(subdiv) {
+  var nummer = getNumberFromName(subdiv);
+  // console.log(nummer);
+  var geojsonData = await fetchGeoJSON(nummer);
+  //   console.log(geojsonData);
+  var momentCentroid = findMomentCentroid(geojsonData.coordinates);
+  var arithmeticMeanCentroid = findArithmeticMeanCentroid(
+    geojsonData.coordinates
+  );
+  var rootMeanSquareCentroid = findRootMeanSquareCentroid(
+    geojsonData.coordinates
+  );
+  var harmonicMeanCentroid = findHarmonicMeanCentroid(geojsonData.coordinates);
+  // console.log(subdiv);
+  var geometricMeanCentroid = findGeometricMeanCentroid(
+    geojsonData.coordinates
+  );
+  var medianCentroid = findMedianCentroid(geojsonData.coordinates);
+  var minimumBoundingCentroid = findMinRectangleCentroid(
+    geojsonData.coordinates
+  );
+  var datapoint = [
+    nummer,
+    water,
+    selectedCoordsys,
+    momentCentroid[0],
+    momentCentroid[1],
+    arithmeticMeanCentroid[0],
+    arithmeticMeanCentroid[1],
+    rootMeanSquareCentroid[0],
+    rootMeanSquareCentroid[1],
+    harmonicMeanCentroid[0],
+    harmonicMeanCentroid[1],
+    geometricMeanCentroid[0],
+    geometricMeanCentroid[1],
+    medianCentroid[0],
+    medianCentroid[1],
+    minimumBoundingCentroid[0],
+    minimumBoundingCentroid[1],
+  ];
+  return datapoint;
+}
+
 function arrayToCSV(data) {
   return data.map((row) => row.join(",")).join("\n");
 }
 
-// Define an async function to wrap your code
 async function processData() {
-  // Your existing code
-
-  // Iterate over the small_municipalities array using a for loop
-  for (const subdiv of inland_county) {
-    var nummer = getNumberFromName(subdiv);
-    // console.log(nummer);
-    var geojsonData = await fetchGeoJSON(nummer);
-    //   console.log(geojsonData);
-    var momentCentroid = findMomentCentroid(geojsonData.coordinates);
-    var arithmeticMeanCentroid = findArithmeticMeanCentroid(
-      geojsonData.coordinates
-    );
-    var rootMeanSquareCentroid = findRootMeanSquareCentroid(
-      geojsonData.coordinates
-    );
-    var harmonicMeanCentroid = findHarmonicMeanCentroid(
-      geojsonData.coordinates
-    );
-    var geometricMeanCentroid = findGeometricMeanCentroid(
-      geojsonData.coordinates
-    );
-    var medianCentroid = findMedianCentroid(geojsonData.coordinates);
-    var minimumBoundingCentroid = findMinRectangleCentroid(
-      geojsonData.coordinates
-    );
-    var datapoint = [
-      nummer,
-      water,
-      selectedCoordsys,
-      momentCentroid[0],
-      momentCentroid[1],
-      arithmeticMeanCentroid[0],
-      arithmeticMeanCentroid[1],
-      rootMeanSquareCentroid[0],
-      rootMeanSquareCentroid[1],
-      harmonicMeanCentroid[0],
-      harmonicMeanCentroid[1],
-      geometricMeanCentroid[0],
-      geometricMeanCentroid[1],
-      medianCentroid[0],
-      medianCentroid[1],
-      minimumBoundingCentroid[0],
-      minimumBoundingCentroid[1],
-    ];
-    data.push(datapoint);
-  }
-
-  // After the loop is finished, continue with writing the file
-  const csv = arrayToCSV(data);
-
-  // Wrap the writeFile function in a Promise to use async/await
-  return new Promise((resolve, reject) => {
-    fs.writeFile(
-      `inland_county_${water}_${selectedCoordsys}.csv`,
-      csv,
-      (err) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
+  for (var subdiv_type of all_subdivs) {
+    for (var water_status of water_statuses) {
+      if (water_status == true) {
+        for (var coordsys of water_coordsys) {
+          selectedCoordsys = coordsys;
+          water = water_status;
+          for (const subdiv of subdiv_type) {
+            var datapoint = await create_datapoint(subdiv);
+            data.push(datapoint);
+          }
+        }
+      } else if (water_status == false) {
+        for (var coordsys of no_water_coordsys) {
+          selectedCoordsys = coordsys;
+          water = water_status;
+          for (const subdiv of subdiv_type) {
+            var datapoint = await create_datapoint(subdiv);
+            data.push(datapoint);
+          }
         }
       }
-    );
+    }
+  }
+  const csv = arrayToCSV(data);
+
+  return new Promise((resolve, reject) => {
+    fs.writeFile(`all_test_data_v4.csv`, csv, (err) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve();
+      }
+    });
   });
 }
 
-// Call the async function and handle any errors
 processData()
   .then(() => {
     console.log("CSV file saved successfully.");

@@ -92,17 +92,28 @@ function findGeometricMeanCentroid(coordinateArray) {
   var n = 0;
   var totLong = 0;
   var totLat = 0;
+  var n_neg_longs = 0;
+  var n_neg_lats = 0;
 
   coordinateArray.forEach((polygon) => {
     n += polygon[0].length;
     polygon[0].forEach((coordinate) => {
-      totLong += Math.log(coordinate[0]);
-      totLat += Math.log(coordinate[1]);
+      if (coordinate[0] < 0) {
+        n_neg_longs++;
+      }
+      totLong += Math.log(Math.abs(coordinate[0]));
+      if (coordinate[1] < 0) {
+        n_neg_lats++;
+      }
+      totLat += Math.log(Math.abs(coordinate[1]));
     });
   });
 
-  centroidX = Math.exp(totLong / n);
-  centroidY = Math.exp(totLat / n);
+  var centroidX = Math.exp(totLong / n);
+  var centroidY = Math.exp(totLat / n);
+
+  centroidX *= ((-1) ** n_neg_longs) ** (1 / n);
+  centroidY *= ((-1) ** n_neg_lats) ** (1 / n);
 
   return [centroidX, centroidY];
 }

@@ -9,7 +9,7 @@ import pyproj
 geod = pyproj.Geod(ellps="WGS84")
 
 water = {True: "water", False: "no water"}
-coordinate_systems = {"etrs89": [4258], "utm32": [25832, 32632], "utm33": [25833, 32633], "utm35": [25835, 32625]}
+coordinate_systems = {"etrs89": [4258], "utm32": [25832, 32632], "utm33": [25833, 32633], "utm35": [25835, 32635]}
 centroids = ["moment", "arith", "rms", "harmonic", "geomean", "median", "minbound"]
 
 # small_municipalities = [
@@ -78,7 +78,7 @@ inland_county = np.array([34])
 
 # lon, lat = transformer.transform(x,y)
 
-df_testdata = pd.read_csv("test_data/all_test_data.csv")
+df_testdata = pd.read_csv("all_test_data_v4.csv")
 
 df_kommunenr = pd.read_csv("kommunenummer.csv")
 df_fylkesnr = pd.read_csv("fylkesnummer.csv")
@@ -141,23 +141,51 @@ for water_key, water_value in water.items():
         # print(type(df_testdata["water"][0]))
         # print(df_testdata[df_testdata["coordsys"].isin(coordsys_value)])
         small_munics = df_testdata[df_testdata["number"].isin(small_municipalities) & (df_testdata["water"] == water_key) & df_testdata["coordsys"].isin(coordsys_value)]
+        if small_munics.empty:
+            print("could not find small_munics with water ==", water_key, "and coordsys == ", coordsys_key)
         large_munics = df_testdata[df_testdata["number"].isin(large_municipalities) & (df_testdata["water"] == water_key) & df_testdata["coordsys"].isin(coordsys_value)]
+        if large_munics.empty:
+            print("could not find large_munics with water ==", water_key, "and coordsys == ", coordsys_key)
         coastal_munics = df_testdata[df_testdata["number"].isin(coastal_municipalities) & (df_testdata["water"] == water_key) & df_testdata["coordsys"].isin(coordsys_value)]
+        if coastal_munics.empty:
+            print("could not find coastal_munics with water ==", water_key, "and coordsys == ", coordsys_key)
         inland_munics = df_testdata[df_testdata["number"].isin(inland_municipalities) & (df_testdata["water"] == water_key) & df_testdata["coordsys"].isin(coordsys_value)]
-        small_county = df_testdata[df_testdata["number"].isin(small_county) & (df_testdata["water"] == water_key) & df_testdata["coordsys"].isin(coordsys_value)]
-        large_county = df_testdata[df_testdata["number"].isin(large_county) & (df_testdata["water"] == water_key) & df_testdata["coordsys"].isin(coordsys_value)]
-        coastal_county = df_testdata[df_testdata["number"].isin(coastal_county) & (df_testdata["water"] == water_key) & df_testdata["coordsys"].isin(coordsys_value)]
-        inland_county = df_testdata[df_testdata["number"].isin(inland_county) & (df_testdata["water"] == water_key) & df_testdata["coordsys"].isin(coordsys_value)]
+        if inland_munics.empty:
+            print("could not find inland_munics with water ==", water_key, "and coordsys == ", coordsys_key)
+        small_count = df_testdata[df_testdata["number"].isin(small_county) & (df_testdata["water"] == water_key) & df_testdata["coordsys"].isin(coordsys_value)]
+        # if small_count.empty:
+        #     print("could not find small_county with water ==", water_key, "and coordsys == ", coordsys_key)
+            # print(type(coordsys_value[0]))
+            # print(df_testdata[df_testdata["number"].isin(small_county) & (df_testdata["water"] == water_key)]["coordsys"].empty)
+            # print(type(water_key) == df_testdata["water"][0])
+            # print(type(coordsys_value[0]) == df_testdata["coordsys"][0])
+            # print(type(coordsys_value[-1]) == df_testdata["coordsys"][0])
+            # print(type(small_county[0]) == df_testdata["number"][0])
+            # print(df_testdata[df_testdata["number"].isin(small_county)])
+            # print(df_testdata[df_testdata["number"].isin(small_county) & (df_testdata["water"] == water_key)])
+            # print(df_testdata[df_testdata["number"].isin(small_county) & (df_testdata["water"] == water_key) & df_testdata["coordsys"].isin(coordsys_value)])
+        # else:
+        #     print("small_county PASSED with water ==", water_key, "and coordsys == ", coordsys_key)
+        #     print(type(coordsys_value[0]))
+        large_count = df_testdata[df_testdata["number"].isin(large_county) & (df_testdata["water"] == water_key) & df_testdata["coordsys"].isin(coordsys_value)]
+        # if large_count.empty:
+        #     print("could not find large_county with water ==", water_key, "and coordsys == ", coordsys_key)
+        coastal_count = df_testdata[df_testdata["number"].isin(coastal_county) & (df_testdata["water"] == water_key) & df_testdata["coordsys"].isin(coordsys_value)]
+        # if coastal_count.empty:
+        #     print("could not find coastal_county with water ==", water_key, "and coordsys == ", coordsys_key)
+        inland_count = df_testdata[df_testdata["number"].isin(inland_county) & (df_testdata["water"] == water_key) & df_testdata["coordsys"].isin(coordsys_value)]
+        # if inland_count.empty:
+        #     print("could not find inland_county with water ==", water_key, "and coordsys == ", coordsys_key)
         # print(small_munics)
         for centroid in centroids:
             small_munic_xs, small_munic_ys, small_munic_nums = [], [], []
             large_munic_xs, large_munic_ys, large_munic_nums = [], [], []
             coastal_munic_xs, coastal_munic_ys, coastal_munic_nums = [], [], []
             inland_munic_xs, inland_munic_ys, inland_munic_nums = [], [], []
-            small_county_xs, small_county_ys, small_county_nums = [], [], []
-            large_county_xs, large_county_ys, large_county_nums = [], [], []
-            coastal_county_xs, coastal_county_ys, coastal_county_nums = [], [], []
-            inland_county_xs, inland_county_ys, inland_county_nums = [], [], []
+            small_count_xs, small_count_ys, small_count_nums = [], [], []
+            large_count_xs, large_count_ys, large_count_nums = [], [], []
+            coastal_count_xs, coastal_count_ys, coastal_count_nums = [], [], []
+            inland_count_xs, inland_count_ys, inland_count_nums = [], [], []
             for index, row in small_munics.iterrows():
                 small_munic_x = small_munics.loc[index, centroid + "X"]
                 small_munic_y = small_munics.loc[index, centroid + "Y"]
@@ -194,54 +222,54 @@ for water_key, water_value in water.items():
                 inland_munic_xs.append(inland_munic_x_converted)
                 inland_munic_ys.append(inland_munic_y_converted)
                 inland_munic_nums.append(inland_munic_num)
-            for index, row in small_county.iterrows():
-                small_county_x = small_county.loc[index, centroid + "X"]
-                small_county_y = small_county.loc[index, centroid + "Y"]
-                small_county_num = small_county.loc[index, "number"]
-                small_county_x_converted, small_county_y_converted = convert_to_4258(row["coordsys"],small_county_x,small_county_y)
-                small_county_xs.append(small_county_x_converted)
-                small_county_ys.append(small_county_y_converted)
-                small_county_nums.append(small_county_num)
-            for index, row in large_county.iterrows():
-                large_county_x = large_county.loc[index, centroid + "X"]
-                large_county_y = large_county.loc[index, centroid + "Y"]
-                large_county_num = large_county.loc[index, "number"]
-                large_county_x_converted, large_county_y_converted = convert_to_4258(row["coordsys"],large_county_x,large_county_y)
-                large_county_xs.append(large_county_x_converted)
-                large_county_ys.append(large_county_y_converted)
-                large_county_nums.append(large_county_num)
-            for index, row in coastal_county.iterrows():
-                coastal_county_x = coastal_county.loc[index, centroid + "X"]
-                coastal_county_y = coastal_county.loc[index, centroid + "Y"]
-                coastal_county_num = coastal_county.loc[index, "number"]
-                coastal_county_x_converted, coastal_county_y_converted = convert_to_4258(row["coordsys"],coastal_county_x,coastal_county_y)
-                coastal_county_xs.append(coastal_county_x_converted)
-                coastal_county_ys.append(coastal_county_y_converted)
-                coastal_county_nums.append(coastal_county_num)
-            for index, row in inland_county.iterrows():
-                inland_county_x = inland_county.loc[index, centroid + "X"]
-                inland_county_y = inland_county.loc[index, centroid + "Y"]
-                inland_county_num = inland_county.loc[index, "number"]
-                inland_county_x_converted, inland_county_y_converted = convert_to_4258(row["coordsys"],inland_county_x,inland_county_y)
-                inland_county_xs.append(inland_county_x_converted)
-                inland_county_ys.append(inland_county_y_converted)
-                inland_county_nums.append(inland_county_num)
+            for index, row in small_count.iterrows():
+                small_count_x = small_count.loc[index, centroid + "X"]
+                small_count_y = small_count.loc[index, centroid + "Y"]
+                small_count_num = small_count.loc[index, "number"]
+                small_count_x_converted, small_count_y_converted = convert_to_4258(row["coordsys"],small_count_x,small_count_y)
+                small_count_xs.append(small_count_x_converted)
+                small_count_ys.append(small_count_y_converted)
+                small_count_nums.append(small_count_num)
+            for index, row in large_count.iterrows():
+                large_count_x = large_count.loc[index, centroid + "X"]
+                large_count_y = large_count.loc[index, centroid + "Y"]
+                large_count_num = large_count.loc[index, "number"]
+                large_count_x_converted, large_count_y_converted = convert_to_4258(row["coordsys"],large_count_x,large_count_y)
+                large_count_xs.append(large_count_x_converted)
+                large_count_ys.append(large_count_y_converted)
+                large_count_nums.append(large_count_num)
+            for index, row in coastal_count.iterrows():
+                coastal_count_x = coastal_count.loc[index, centroid + "X"]
+                coastal_count_y = coastal_count.loc[index, centroid + "Y"]
+                coastal_count_num = coastal_count.loc[index, "number"]
+                coastal_count_x_converted, coastal_count_y_converted = convert_to_4258(row["coordsys"],coastal_count_x,coastal_count_y)
+                coastal_count_xs.append(coastal_count_x_converted)
+                coastal_count_ys.append(coastal_count_y_converted)
+                coastal_count_nums.append(coastal_count_num)
+            for index, row in inland_count.iterrows():
+                inland_count_x = inland_count.loc[index, centroid + "X"]
+                inland_count_y = inland_count.loc[index, centroid + "Y"]
+                inland_count_num = inland_count.loc[index, "number"]
+                inland_count_x_converted, inland_count_y_converted = convert_to_4258(row["coordsys"],inland_count_x,inland_count_y)
+                inland_count_xs.append(inland_count_x_converted)
+                inland_count_ys.append(inland_count_y_converted)
+                inland_count_nums.append(inland_count_num)
             small_munic_xs, small_munic_ys = np.array(small_munic_xs), np.array(small_munic_ys)
             large_munic_xs, large_munic_ys = np.array(large_munic_xs), np.array(large_munic_ys)
             coastal_munic_xs, coastal_munic_ys = np.array(coastal_munic_xs), np.array(coastal_munic_ys)
             inland_munic_xs, inland_munic_ys = np.array(inland_munic_xs), np.array(inland_munic_ys)
-            small_county_xs, small_county_ys = np.array(small_county_xs), np.array(small_county_ys)
-            large_county_xs, large_county_ys = np.array(large_county_xs), np.array(large_county_ys)
-            coastal_county_xs, coastal_county_ys = np.array(coastal_county_xs), np.array(coastal_county_ys)
-            inland_county_xs, inland_county_ys = np.array(inland_county_xs), np.array(inland_county_ys)
+            small_count_xs, small_count_ys = np.array(small_count_xs), np.array(small_count_ys)
+            large_count_xs, large_count_ys = np.array(large_count_xs), np.array(large_count_ys)
+            coastal_count_xs, coastal_count_ys = np.array(coastal_count_xs), np.array(coastal_count_ys)
+            inland_count_xs, inland_count_ys = np.array(inland_count_xs), np.array(inland_count_ys)
             small_munic_diffs = np.zeros(len(small_munic_xs))
             large_munic_diffs = np.zeros(len(large_munic_xs))
             coastal_munic_diffs = np.zeros(len(coastal_munic_xs))
             inland_munic_diffs = np.zeros(len(inland_munic_xs))
-            small_county_diffs = np.zeros(len(small_county_xs))
-            large_county_diffs = np.zeros(len(large_county_xs))
-            coastal_county_diffs = np.zeros(len(coastal_county_xs))
-            inland_county_diffs = np.zeros(len(inland_county_xs))
+            small_count_diffs = np.zeros(len(small_count_xs))
+            large_count_diffs = np.zeros(len(large_count_xs))
+            coastal_count_diffs = np.zeros(len(coastal_count_xs))
+            inland_count_diffs = np.zeros(len(inland_count_xs))
             for i in range(len(small_munic_diffs)):
                 _, _, small_munic_diffs[i] = geod.inv(small_munic_xs[i], small_munic_ys[i], kommuner_control_data[small_munic_nums[i]][0], kommuner_control_data[small_munic_nums[i]][1])
             for j in range(len(large_munic_diffs)):
@@ -250,14 +278,14 @@ for water_key, water_value in water.items():
                 _, _, coastal_munic_diffs[k] = geod.inv(coastal_munic_xs[k], coastal_munic_ys[k], kommuner_control_data[coastal_munic_nums[k]][0], kommuner_control_data[coastal_munic_nums[k]][1])
             for l in range(len(inland_munic_diffs)):
                 _, _, inland_munic_diffs[l] = geod.inv(inland_munic_xs[l], inland_munic_ys[l], kommuner_control_data[inland_munic_nums[l]][0], kommuner_control_data[inland_munic_nums[l]][1])
-            for m in range(len(small_county_diffs)):
-                _, _, small_county_diffs[m] = geod.inv(small_county_xs[m], small_county_ys[m], fylker_control_data[small_county_nums[m]][0], fylker_control_data[small_county_nums[m]][1])
-            for n in range(len(large_county_diffs)):
-                _, _, large_county_diffs[n] = geod.inv(large_county_xs[n], large_county_ys[n], fylker_control_data[large_county_nums[n]][0], fylker_control_data[large_county_nums[n]][1])
-            for o in range(len(coastal_county_diffs)):
-                _, _, coastal_county_diffs[o] = geod.inv(coastal_county_xs[o], coastal_county_ys[o], fylker_control_data[coastal_county_nums[o]][0], fylker_control_data[coastal_county_nums[o]][1])
-            for p in range(len(inland_county_diffs)):
-                _, _, inland_county_diffs[p] = geod.inv(inland_county_xs[p], inland_county_ys[p], fylker_control_data[inland_county_nums[p]][0], fylker_control_data[inland_county_nums[p]][1])
+            for m in range(len(small_count_diffs)):
+                _, _, small_count_diffs[m] = geod.inv(small_count_xs[m], small_count_ys[m], fylker_control_data[small_count_nums[m]][0], fylker_control_data[small_count_nums[m]][1])
+            for n in range(len(large_count_diffs)):
+                _, _, large_count_diffs[n] = geod.inv(large_count_xs[n], large_count_ys[n], fylker_control_data[large_count_nums[n]][0], fylker_control_data[large_count_nums[n]][1])
+            for o in range(len(coastal_count_diffs)):
+                _, _, coastal_count_diffs[o] = geod.inv(coastal_count_xs[o], coastal_count_ys[o], fylker_control_data[coastal_count_nums[o]][0], fylker_control_data[coastal_count_nums[o]][1])
+            for p in range(len(inland_count_diffs)):
+                _, _, inland_count_diffs[p] = geod.inv(inland_count_xs[p], inland_count_ys[p], fylker_control_data[inland_count_nums[p]][0], fylker_control_data[inland_count_nums[p]][1])
             small_munic_avg_diff = np.average(small_munic_diffs)
             small_munic_median_diff = np.median(small_munic_diffs)
             small_munic_std_diff = np.std(small_munic_diffs)
@@ -270,15 +298,15 @@ for water_key, water_value in water.items():
             inland_munic_avg_diff = np.average(inland_munic_diffs)
             inland_munic_median_diff = np.median(inland_munic_diffs)
             inland_munic_std_diff = np.std(inland_munic_diffs)
-            if(small_county_diffs.size > 0):
-                small_county_diff = small_county_diffs[0]
-            if(large_county_diffs.size > 0):
-                large_county_diff = large_county_diffs[0]
-            if(coastal_county_diffs.size > 0):
-                coastal_county_diff = coastal_county_diffs[0]
-            if(inland_county_diffs.size > 0):
-                inland_county_diff = inland_county_diffs[0]
-            row_to_add = {"centroid": centroid, "water": water_value, "coordsys": coordsys_key, "small_munic_avg_diff": small_munic_avg_diff, "small_munic_median_diff": small_munic_median_diff, "small_munic_std_diff": small_munic_std_diff, "large_munic_avg_diff": large_munic_avg_diff, "large_munic_median_diff": large_munic_median_diff, "large_munic_std_diff": large_munic_std_diff, "coastal_munic_avg_diff": coastal_munic_avg_diff, "coastal_munic_median_diff": coastal_munic_median_diff, "coastal_munic_std_diff": coastal_munic_std_diff, "inland_munic_avg_diff": inland_munic_avg_diff, "inland_munic_median_diff": inland_munic_median_diff, "inland_munic_std_diff": inland_munic_std_diff, "small_county_diff": small_county_diff, "large_county_diff": large_county_diff, "coastal_county_diff": coastal_county_diff, "inland_county_diff": inland_county_diff}
+            if(small_count_diffs.size > 0):
+                small_count_diff = small_count_diffs[0]
+            if(large_count_diffs.size > 0):
+                large_count_diff = large_count_diffs[0]
+            if(coastal_count_diffs.size > 0):
+                coastal_count_diff = coastal_count_diffs[0]
+            if(inland_count_diffs.size > 0):
+                inland_count_diff = inland_count_diffs[0]
+            row_to_add = {"centroid": centroid, "water": water_value, "coordsys": coordsys_key, "small_munic_avg_diff": small_munic_avg_diff, "small_munic_median_diff": small_munic_median_diff, "small_munic_std_diff": small_munic_std_diff, "large_munic_avg_diff": large_munic_avg_diff, "large_munic_median_diff": large_munic_median_diff, "large_munic_std_diff": large_munic_std_diff, "coastal_munic_avg_diff": coastal_munic_avg_diff, "coastal_munic_median_diff": coastal_munic_median_diff, "coastal_munic_std_diff": coastal_munic_std_diff, "inland_munic_avg_diff": inland_munic_avg_diff, "inland_munic_median_diff": inland_munic_median_diff, "inland_munic_std_diff": inland_munic_std_diff, "small_county_diff": small_count_diff, "large_county_diff": large_count_diff, "coastal_county_diff": coastal_count_diff, "inland_county_diff": inland_count_diff}
             df_final = pd.concat([df_final, pd.DataFrame([row_to_add])], ignore_index=True)
 
 print(df_final)
