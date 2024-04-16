@@ -78,7 +78,7 @@ inland_county = np.array([34])
 
 # lon, lat = transformer.transform(x,y)
 
-df_testdata = pd.read_csv("all_test_data_v5.csv")
+df_testdata = pd.read_csv("all_test_data_v6.csv")
 
 df_kommunenr = pd.read_csv("kommunenummer.csv")
 df_fylkesnr = pd.read_csv("fylkesnummer.csv")
@@ -89,46 +89,47 @@ df_control_fylker = pd.read_csv("../midtpunkt_fylker.csv")
 kommuner_control_data = {}
 fylker_control_data = {}
 
-from_25832_to_4258 = pyproj.Transformer.from_crs("epsg:25832","epsg:4258")
-from_25833_to_4258 = pyproj.Transformer.from_crs("epsg:25833","epsg:4258")
-from_25835_to_4258 = pyproj.Transformer.from_crs("epsg:25835","epsg:4258")
-from_32632_to_4258 = pyproj.Transformer.from_crs("epsg:32632","epsg:4258")
-from_32633_to_4258 = pyproj.Transformer.from_crs("epsg:32633","epsg:4258")
-from_32635_to_4258 = pyproj.Transformer.from_crs("epsg:32635","epsg:4258")
+from_4258_to_4326 = pyproj.Transformer.from_crs("epsg:4258","epsg:4326")
+from_25832_to_4326 = pyproj.Transformer.from_crs("epsg:25832","epsg:4326")
+from_25833_to_4326 = pyproj.Transformer.from_crs("epsg:25833","epsg:4326")
+from_25835_to_4326 = pyproj.Transformer.from_crs("epsg:25835","epsg:4326")
+from_32632_to_4326 = pyproj.Transformer.from_crs("epsg:32632","epsg:4326")
+from_32633_to_4326 = pyproj.Transformer.from_crs("epsg:32633","epsg:4326")
+from_32635_to_4326 = pyproj.Transformer.from_crs("epsg:32635","epsg:4326")
 
 for munic_index, munic_row in df_control_kommuner.iterrows():
     nr = munic_row['K-nr.']
     x = munic_row['Øst UTM33']
     y = munic_row['Nord UTM33']
-    lon, lat = from_25833_to_4258.transform(x,y)
+    lon, lat = from_25833_to_4326.transform(x,y)
     kommuner_control_data[nr] = (lon, lat)
 
 for county_index, county_row in df_control_fylker.iterrows():
     nr = county_row['F-nr.']
     x = county_row['Øst UTM33']
     y = county_row['Nord UTM33']
-    lon, lat = from_25833_to_4258.transform(x,y)
+    lon, lat = from_25833_to_4326.transform(x,y)
     fylker_control_data[nr] = (lon, lat)
 
 columns = ["centroid","water","coordsys","small_munic_avg_diff","small_munic_median_diff","small_munic_std_diff","large_munic_avg_diff","large_munic_median_diff","large_munic_std_diff","coastal_munic_avg_diff","coastal_munic_median_diff","coastal_munic_std_diff","inland_munic_avg_diff","inland_munic_median_diff","inland_munic_std_diff","small_county_diff","large_county_diff","coastal_county_diff","inland_county_diff"]
 
 df_final = pd.DataFrame(columns=columns)
 
-def convert_to_4258(epsg, x, y):
+def convert_to_4326(epsg, x, y):
     if epsg == 4258:
-        return x, y
+        return from_4258_to_4326.transform(x,y)
     elif epsg == 25832:
-        return from_25832_to_4258.transform(x,y)
+        return from_25832_to_4326.transform(x,y)
     elif epsg == 25833:
-        return from_25833_to_4258.transform(x,y)
+        return from_25833_to_4326.transform(x,y)
     elif epsg == 25835:
-        return from_25835_to_4258.transform(x,y)
+        return from_25835_to_4326.transform(x,y)
     elif epsg == 32632:
-        return from_32632_to_4258.transform(x,y)
+        return from_32632_to_4326.transform(x,y)
     elif epsg == 32633:
-        return from_32633_to_4258.transform(x,y)
+        return from_32633_to_4326.transform(x,y)
     elif epsg == 32635:
-        return from_32635_to_4258.transform(x,y)
+        return from_32635_to_4326.transform(x,y)
 
 for water_key, water_value in water.items():
     for coordsys_key, coordsys_value in coordinate_systems.items():
@@ -193,8 +194,8 @@ for water_key, water_value in water.items():
                 # print(small_munic_x)
                 # print(small_munic_y)
                 # print(type(row["coordsys"]))
-                # print(convert_to_4258(row["coordsys"],small_munic_x,small_munic_y))
-                small_munic_x_converted, small_munic_y_converted = convert_to_4258(row["coordsys"],small_munic_x,small_munic_y)
+                # print(convert_to_4326(row["coordsys"],small_munic_x,small_munic_y))
+                small_munic_x_converted, small_munic_y_converted = convert_to_4326(row["coordsys"],small_munic_x,small_munic_y)
                 small_munic_xs.append(small_munic_x_converted)
                 small_munic_ys.append(small_munic_y_converted)
                 small_munic_nums.append(small_munic_num)
@@ -202,7 +203,7 @@ for water_key, water_value in water.items():
                 large_munic_x = large_munics.loc[index, centroid + "X"]
                 large_munic_y = large_munics.loc[index, centroid + "Y"]
                 large_munic_num = large_munics.loc[index, "number"]
-                large_munic_x_converted, large_munic_y_converted = convert_to_4258(row["coordsys"],large_munic_x,large_munic_y)
+                large_munic_x_converted, large_munic_y_converted = convert_to_4326(row["coordsys"],large_munic_x,large_munic_y)
                 large_munic_xs.append(large_munic_x_converted)
                 large_munic_ys.append(large_munic_y_converted)
                 large_munic_nums.append(large_munic_num)
@@ -210,7 +211,7 @@ for water_key, water_value in water.items():
                 coastal_munic_x = coastal_munics.loc[index, centroid + "X"]
                 coastal_munic_y = coastal_munics.loc[index, centroid + "Y"]
                 coastal_munic_num = coastal_munics.loc[index, "number"]
-                coastal_munic_x_converted, coastal_munic_y_converted = convert_to_4258(row["coordsys"],coastal_munic_x,coastal_munic_y)
+                coastal_munic_x_converted, coastal_munic_y_converted = convert_to_4326(row["coordsys"],coastal_munic_x,coastal_munic_y)
                 coastal_munic_xs.append(coastal_munic_x_converted)
                 coastal_munic_ys.append(coastal_munic_y_converted)
                 coastal_munic_nums.append(coastal_munic_num)
@@ -218,7 +219,7 @@ for water_key, water_value in water.items():
                 inland_munic_x = inland_munics.loc[index, centroid + "X"]
                 inland_munic_y = inland_munics.loc[index, centroid + "Y"]
                 inland_munic_num = inland_munics.loc[index, "number"]
-                inland_munic_x_converted, inland_munic_y_converted = convert_to_4258(row["coordsys"],inland_munic_x,inland_munic_y)
+                inland_munic_x_converted, inland_munic_y_converted = convert_to_4326(row["coordsys"],inland_munic_x,inland_munic_y)
                 inland_munic_xs.append(inland_munic_x_converted)
                 inland_munic_ys.append(inland_munic_y_converted)
                 inland_munic_nums.append(inland_munic_num)
@@ -226,7 +227,7 @@ for water_key, water_value in water.items():
                 small_count_x = small_count.loc[index, centroid + "X"]
                 small_count_y = small_count.loc[index, centroid + "Y"]
                 small_count_num = small_count.loc[index, "number"]
-                small_count_x_converted, small_count_y_converted = convert_to_4258(row["coordsys"],small_count_x,small_count_y)
+                small_count_x_converted, small_count_y_converted = convert_to_4326(row["coordsys"],small_count_x,small_count_y)
                 small_count_xs.append(small_count_x_converted)
                 small_count_ys.append(small_count_y_converted)
                 small_count_nums.append(small_count_num)
@@ -234,7 +235,7 @@ for water_key, water_value in water.items():
                 large_count_x = large_count.loc[index, centroid + "X"]
                 large_count_y = large_count.loc[index, centroid + "Y"]
                 large_count_num = large_count.loc[index, "number"]
-                large_count_x_converted, large_count_y_converted = convert_to_4258(row["coordsys"],large_count_x,large_count_y)
+                large_count_x_converted, large_count_y_converted = convert_to_4326(row["coordsys"],large_count_x,large_count_y)
                 large_count_xs.append(large_count_x_converted)
                 large_count_ys.append(large_count_y_converted)
                 large_count_nums.append(large_count_num)
@@ -242,7 +243,7 @@ for water_key, water_value in water.items():
                 coastal_count_x = coastal_count.loc[index, centroid + "X"]
                 coastal_count_y = coastal_count.loc[index, centroid + "Y"]
                 coastal_count_num = coastal_count.loc[index, "number"]
-                coastal_count_x_converted, coastal_count_y_converted = convert_to_4258(row["coordsys"],coastal_count_x,coastal_count_y)
+                coastal_count_x_converted, coastal_count_y_converted = convert_to_4326(row["coordsys"],coastal_count_x,coastal_count_y)
                 coastal_count_xs.append(coastal_count_x_converted)
                 coastal_count_ys.append(coastal_count_y_converted)
                 coastal_count_nums.append(coastal_count_num)
@@ -250,7 +251,7 @@ for water_key, water_value in water.items():
                 inland_count_x = inland_count.loc[index, centroid + "X"]
                 inland_count_y = inland_count.loc[index, centroid + "Y"]
                 inland_count_num = inland_count.loc[index, "number"]
-                inland_count_x_converted, inland_count_y_converted = convert_to_4258(row["coordsys"],inland_count_x,inland_count_y)
+                inland_count_x_converted, inland_count_y_converted = convert_to_4326(row["coordsys"],inland_count_x,inland_count_y)
                 inland_count_xs.append(inland_count_x_converted)
                 inland_count_ys.append(inland_count_y_converted)
                 inland_count_nums.append(inland_count_num)
@@ -311,4 +312,4 @@ for water_key, water_value in water.items():
 
 print(df_final)
 
-df_final.to_csv("test_data_nowater4258_reprocessed.csv")
+df_final.to_csv("test_data_processed_v2.csv")

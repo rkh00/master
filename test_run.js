@@ -377,6 +377,21 @@ function getNumberFromName(navn) {
   }
 }
 
+function swapLatLong(input_geojson) {
+  var parsed_geojson = input_geojson;
+
+  parsed_geojson.coordinates.forEach((polygon) => {
+    const numPoints = polygon[0].length;
+    for (let i = 0; i < numPoints; i++) {
+      const temp = polygon[0][i][0];
+      polygon[0][i][0] = polygon[0][i][1];
+      polygon[0][i][1] = temp;
+    }
+  });
+
+  return parsed_geojson;
+}
+
 async function fetchGeoJSON(nummer) {
   //   var apiLink;
   const switchValue = `${nummer.length}_${water}`;
@@ -432,6 +447,9 @@ async function fetchGeoJSON(nummer) {
     }
   }
   geojsonData.coordinates = coordinates;
+  if (selectedCoordsys == "4258" && !water) {
+    geojsonData = swapLatLong(geojsonData);
+  }
   return geojsonData;
 }
 
@@ -537,7 +555,7 @@ async function processData() {
   const csv = arrayToCSV(data);
 
   return new Promise((resolve, reject) => {
-    fs.writeFile(`all_test_data_v4.csv`, csv, (err) => {
+    fs.writeFile(`all_test_data_v6.csv`, csv, (err) => {
       if (err) {
         reject(err);
       } else {

@@ -67,6 +67,22 @@ function getNameFromNumber(nummer) {
   }
 }
 
+function swapLatLong(input_geojson) {
+  // var parsed_geojson = JSON.parse(input_geojson);
+  var parsed_geojson = input_geojson;
+
+  parsed_geojson.coordinates.forEach((polygon) => {
+    const numPoints = polygon[0].length;
+    for (let i = 0; i < numPoints; i++) {
+      const temp = polygon[0][i][0];
+      polygon[0][i][0] = polygon[0][i][1];
+      polygon[0][i][1] = temp;
+    }
+  });
+
+  return parsed_geojson;
+}
+
 async function fetchGeoJSON(nummer) {
   const switchValue = `${nummer.length}_${water}`;
   polygonName = getNameFromNumber(nummer);
@@ -84,7 +100,7 @@ async function fetchGeoJSON(nummer) {
           break;
         }
       }
-      apiLink = `https://ogcapi-stemmekretser.kartverket.no/collections/kommuner/items/${featureId}?crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FEPSG%2F0%2F${selectedCoordsys}&f=json&lang=nb-NO`;
+      apiLink = `https://cors-anywhere.herokuapp.com/https://ogcapi-stemmekretser.kartverket.no/collections/kommuner/items/${featureId}?crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FEPSG%2F0%2F${selectedCoordsys}&f=json&lang=nb-NO`;
       break;
     case "2_false":
       for (var i = 0; i < fylkeFeatureIds.length; i++) {
@@ -93,7 +109,7 @@ async function fetchGeoJSON(nummer) {
           break;
         }
       }
-      apiLink = `https://ogcapi-stemmekretser.kartverket.no/collections/fylker/items/${featureId}?crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FEPSG%2F0%2F${selectedCoordsys}&f=json&lang=nb-NO`;
+      apiLink = `https://cors-anywhere.herokuapp.com/https://ogcapi-stemmekretser.kartverket.no/collections/fylker/items/${featureId}?crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FEPSG%2F0%2F${selectedCoordsys}&f=json&lang=nb-NO`;
       break;
     default:
       console.error("Unknown error.");
@@ -126,6 +142,11 @@ async function addGeoJSONToMap(nummer) {
     }
   }
   geojsonData.coordinates = coordinates;
+
+  if (selectedCoordsys == "4258" && !water) {
+    geojsonData = swapLatLong(geojsonData);
+  }
+
   polygonLayer.addData(geojsonData);
 
   map.fitBounds(polygonLayer.getBounds());

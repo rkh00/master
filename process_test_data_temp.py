@@ -8,9 +8,11 @@ import pyproj
 # transformer = pyproj.Transformer.from_crs(source_epsg,target_epsg)
 geod = pyproj.Geod(ellps="WGS84")
 
-water = {True: "water", False: "no water"}
-coordinate_systems = {"etrs89": [4258], "utm32": [25832, 32632], "utm33": [25833, 32633], "utm35": [25835, 32635]}
+# water = {True: "water", False: "no water"}
+# coordinate_systems = {"etrs89": [4258], "utm32": [25832, 32632], "utm33": [25833, 32633], "utm35": [25835, 32635]}
 centroids = ["moment", "arith", "rms", "harmonic", "geomean", "median", "minbound"]
+water = {False: "no water"}
+coordinate_systems = {"etrs89": [4258]}
 
 # small_municipalities = [
 #   "Aukra",
