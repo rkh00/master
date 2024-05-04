@@ -1,4 +1,5 @@
 import pandas as pd
+import matplotlib.pyplot as plt
 
 df_centroids = pd.read_csv("subdiv_centroids_processed.csv")
 df_centroids_munic = df_centroids.iloc[15:]
@@ -10,6 +11,38 @@ count_errors = df_centroids_count["error"]
 print("Municipality averages:", munic_errors.mean())
 print("Municipality median:", munic_errors.median())
 print("Municipality standard deviation:", munic_errors.std())
+print("Smallest municipality error:", munic_errors.min())
+print("Larges municipality error:", munic_errors.max())
 print("County averages:", count_errors.mean())
 print("County median:", count_errors.median())
 print("County standard deviation:", count_errors.std())
+print("Smallest county error:", count_errors.min())
+print("Larges county error:", count_errors.max())
+
+munic_errors_sorted = munic_errors.sort_values().reset_index(drop=True)
+count_errors_sorted = count_errors.sort_values().reset_index(drop=True)
+
+df_sorted = count_errors_sorted
+
+# plt.figure(figsize=(10, 6))
+# plt.bar(df_sorted.index, df_sorted.values, color='b', label='Error')
+# plt.axhline(y=df_sorted.mean(), color='g', linestyle='--', label='Average')
+# plt.axhline(y=df_sorted.median(), color='r', linestyle='--', label='Median')
+
+# plt.xlabel('County', fontweight ='bold', fontsize = 15)
+# plt.ylabel('Error (m)', fontweight ='bold', fontsize = 15)
+# plt.xticks([], [])
+# plt.title('Error in county centroid calculation', fontweight ='bold', fontsize = 20)
+# plt.legend()
+
+# plt.grid(True)
+# plt.tight_layout()
+# plt.show()
+
+# print(df_sorted)
+
+# plt.plot(munic_errors_sorted.index, munic_errors_sorted.values)
+# plt.xlabel('Index')
+# plt.ylabel('Values')
+# plt.title('Sorted Pandas Series')
+# plt.show()
