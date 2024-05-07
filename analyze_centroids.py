@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -11,11 +12,15 @@ count_errors = df_centroids_count["error"]
 print("Municipality averages:", munic_errors.mean())
 print("Municipality median:", munic_errors.median())
 print("Municipality standard deviation:", munic_errors.std())
+print("Municipality RMSE:", np.sqrt((munic_errors**2).mean()))
+print("Municipality MAE:", munic_errors.abs().mean())
 print("Smallest municipality error:", munic_errors.min())
 print("Larges municipality error:", munic_errors.max())
 print("County averages:", count_errors.mean())
 print("County median:", count_errors.median())
 print("County standard deviation:", count_errors.std())
+print("County RMSE:", np.sqrt((count_errors**2).mean()))
+print("County MAE:", count_errors.abs().mean())
 print("Smallest county error:", count_errors.min())
 print("Larges county error:", count_errors.max())
 
