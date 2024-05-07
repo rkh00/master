@@ -290,29 +290,29 @@ for water_key, water_value in water.items():
             combined_munic_diffs = np.concatenate((small_munic_diffs, large_munic_diffs, coastal_munic_diffs, inland_munic_diffs))
             small_munic_min = np.min(small_munic_diffs)
             small_munic_max = np.max(small_munic_diffs)
-            small_munic_avg_diff = np.average(small_munic_diffs)
+            small_munic_avg_diff = np.mean(small_munic_diffs)
             small_munic_median_diff = np.median(small_munic_diffs)
             small_munic_std_diff = np.std(small_munic_diffs)
             small_munic_rmse = np.sqrt((small_munic_diffs**2).mean())
             large_munic_min = np.min(large_munic_diffs)
             large_munic_max = np.max(large_munic_diffs)
-            large_munic_avg_diff = np.average(large_munic_diffs)
+            large_munic_avg_diff = np.mean(large_munic_diffs)
             large_munic_median_diff = np.median(large_munic_diffs)
             large_munic_std_diff = np.std(large_munic_diffs)
             large_munic_rmse = np.sqrt((large_munic_diffs**2).mean())
             coastal_munic_min = np.min(coastal_munic_diffs)
             coastal_munic_max = np.max(coastal_munic_diffs)
-            coastal_munic_avg_diff = np.average(coastal_munic_diffs)
+            coastal_munic_avg_diff = np.mean(coastal_munic_diffs)
             coastal_munic_median_diff = np.median(coastal_munic_diffs)
             coastal_munic_std_diff = np.std(coastal_munic_diffs)
             coastal_munic_rmse = np.sqrt((coastal_munic_diffs**2).mean())
             inland_munic_min = np.min(inland_munic_diffs)
             inland_munic_max = np.max(inland_munic_diffs)
-            inland_munic_avg_diff = np.average(inland_munic_diffs)
+            inland_munic_avg_diff = np.mean(inland_munic_diffs)
             inland_munic_median_diff = np.median(inland_munic_diffs)
             inland_munic_std_diff = np.std(inland_munic_diffs)
             inland_munic_rmse = np.sqrt((inland_munic_diffs**2).mean())
-            overall_munic_avg = np.average(combined_munic_diffs)
+            overall_munic_avg = np.mean(combined_munic_diffs)
             overall_munic_rmse = np.sqrt((combined_munic_diffs**2).mean())
             if(small_count_diffs.size > 0):
                 small_count_diff = small_count_diffs[0]
@@ -322,10 +322,10 @@ for water_key, water_value in water.items():
                 coastal_count_diff = coastal_count_diffs[0]
             if(inland_count_diffs.size > 0):
                 inland_count_diff = inland_count_diffs[0]
-            avg_count_diff = np.average(np.array([small_count_diff,large_count_diff,coastal_count_diff,inland_count_diff]))
+            avg_count_diff = np.mean(np.array([small_count_diff,large_count_diff,coastal_count_diff,inland_count_diff]))
             row_to_add = {"centroid": centroid, "water": water_value, "coordsys": coordsys_key, "small_munic_min": small_munic_min, "small_munic_max": small_munic_max, "small_munic_avg_diff": small_munic_avg_diff, "small_munic_median_diff": small_munic_median_diff, "small_munic_std_diff": small_munic_std_diff, "small_munic_rmse": small_munic_rmse, "large_munic_min": large_munic_min, "large_munic_max": large_munic_max, "large_munic_avg_diff": large_munic_avg_diff, "large_munic_median_diff": large_munic_median_diff, "large_munic_std_diff": large_munic_std_diff, "large_munic_rmse": large_munic_rmse, "coastal_munic_min": coastal_munic_min, "coastal_munic_max": coastal_munic_max, "coastal_munic_avg_diff": coastal_munic_avg_diff, "coastal_munic_median_diff": coastal_munic_median_diff, "coastal_munic_std_diff": coastal_munic_std_diff, "coastal_munic_rmse": coastal_munic_rmse, "inland_munic_min": inland_munic_min, "inland_munic_max": inland_munic_max, "inland_munic_avg_diff": inland_munic_avg_diff, "inland_munic_median_diff": inland_munic_median_diff, "inland_munic_std_diff": inland_munic_std_diff, "inland_munic_rmse": inland_munic_rmse, "overall_munic_avg": overall_munic_avg, "overall_munic_rmse": overall_munic_rmse, "small_county_diff": small_count_diff, "large_county_diff": large_count_diff, "coastal_county_diff": coastal_count_diff, "inland_county_diff": inland_count_diff, "avg_count_diff": avg_count_diff}
             df_final = pd.concat([df_final, pd.DataFrame([row_to_add])], ignore_index=True)
 
 print(df_final)
 
-df_final.to_csv("test_data_processed_v5.csv")
+df_final.to_csv("test_data_processed_v6.csv")
