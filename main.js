@@ -10,7 +10,9 @@ var osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 var marker = L.marker([63.990556, 12.307778]).addTo(map);
 
 marker
-  .bindPopup("<b>Norway's geographic centroid</b><br>According to Kartverket.")
+  .bindPopup(
+    "<b>Norway's geographic centroid</b><br>According to Kartverket.<br>63.99°N, 12.31°E"
+  )
   .openPopup();
 
 var polygonLayer = L.geoJSON().addTo(map);
@@ -160,7 +162,11 @@ function addCentroidToMap() {
   pointLayer.clearLayers();
   var marker = L.marker([centroid[1], centroid[0]])
     .bindPopup(
-      `<b>${centroidTypes[selectedCentroid]} Centroid of ${polygonName}:</b><br>${centroid[1]}, ${centroid[0]}`
+      `<b>${
+        centroidTypes[selectedCentroid]
+      } Centroid of ${polygonName}:</b><br>${centroid[1].toFixed(
+        2
+      )}°N, ${centroid[0].toFixed(2)}°E`
     )
     .openPopup()
     .addTo(pointLayer);
