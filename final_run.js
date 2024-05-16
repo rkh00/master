@@ -500,7 +500,13 @@ async function processData() {
       geojsonData.coordinates
     );
     var kommunenavn = geojsonData.properties.kommunenavn;
-    var datapoint = [kommune.nummer, kommunenavn, area, centroidX, centroidY];
+    var datapoint = [
+      kommune.nummer,
+      kommunenavn,
+      area.toFixed(0),
+      centroidX.toFixed(0),
+      centroidY.toFixed(0),
+    ];
     municipalityCentroids.push([centroidX, centroidY]);
     municipalityAreas.push(area);
     data.push(datapoint);
@@ -513,7 +519,13 @@ async function processData() {
       geojsonData.coordinates
     );
     var fylkesnavn = geojsonData.properties.fylkesnavn;
-    var datapoint = [fylke.nummer, fylkesnavn, area, centroidX, centroidY];
+    var datapoint = [
+      fylke.nummer,
+      fylkesnavn,
+      area.toFixed(0),
+      centroidX.toFixed(0),
+      centroidY.toFixed(0),
+    ];
     countyCentroids.push([centroidX, centroidY]);
     countyAreas.push(area);
     data.push(datapoint);
@@ -522,22 +534,26 @@ async function processData() {
   const sumMunicAreas = municipalityAreas.reduce((acc, val) => acc + val, 0);
   const sumCountyAreas = countyAreas.reduce((acc, val) => acc + val, 0);
 
-  const municCentroidX =
+  const municCentroidX = (
     municipalityCentroids
       .map((innerArray, index) => innerArray[0] * municipalityAreas[index])
-      .reduce((acc, val) => acc + val, 0) / sumMunicAreas;
-  const municCentroidY =
+      .reduce((acc, val) => acc + val, 0) / sumMunicAreas
+  ).toFixed(0);
+  const municCentroidY = (
     municipalityCentroids
       .map((innerArray, index) => innerArray[1] * municipalityAreas[index])
-      .reduce((acc, val) => acc + val, 0) / sumMunicAreas;
-  const countCentroidX =
+      .reduce((acc, val) => acc + val, 0) / sumMunicAreas
+  ).toFixed(0);
+  const countCentroidX = (
     countyCentroids
       .map((innerArray, index) => innerArray[0] * countyAreas[index])
-      .reduce((acc, val) => acc + val, 0) / sumCountyAreas;
-  const countCentroidY =
+      .reduce((acc, val) => acc + val, 0) / sumCountyAreas
+  ).toFixed(0);
+  const countCentroidY = (
     countyCentroids
       .map((innerArray, index) => innerArray[1] * countyAreas[index])
-      .reduce((acc, val) => acc + val, 0) / sumCountyAreas;
+      .reduce((acc, val) => acc + val, 0) / sumCountyAreas
+  ).toFixed(0);
 
   console.log(
     `Using municipality GeoJSONs, the moment centroid of Norway is at (${municCentroidY} N, ${municCentroidX} E) (UTM33)`
@@ -549,7 +565,7 @@ async function processData() {
   const csv = arrayToCSV(data);
 
   return new Promise((resolve, reject) => {
-    fs.writeFile(`subdiv_centroids.csv`, csv, (err) => {
+    fs.writeFile(`subdiv_centroids_v2.csv`, csv, (err) => {
       if (err) {
         reject(err);
       } else {

@@ -338,13 +338,13 @@ const all_subdivs = [
   inland_county,
 ];
 
-const water_coordsys = ["4258", "32632", "32633", "32635"];
-const no_water_coordsys = ["4258", "25832", "25833", "25835"];
+// const water_coordsys = ["32632", "32633", "32635"];
+const coordsyses = ["25832", "25833", "25835"];
 
 const water_statuses = [true, false];
 
-var selectedCoordsys = "25835";
-var water = false;
+var selectedCoordsys;
+var water;
 
 function getNameFromNumber(nummer) {
   if (nummer.length == 4) {
@@ -506,20 +506,20 @@ async function create_datapoint(subdiv) {
     nummer,
     water,
     selectedCoordsys,
-    momentCentroid[0],
-    momentCentroid[1],
-    arithmeticMeanCentroid[0],
-    arithmeticMeanCentroid[1],
-    rootMeanSquareCentroid[0],
-    rootMeanSquareCentroid[1],
-    harmonicMeanCentroid[0],
-    harmonicMeanCentroid[1],
-    geometricMeanCentroid[0],
-    geometricMeanCentroid[1],
-    medianCentroid[0],
-    medianCentroid[1],
-    minimumBoundingCentroid[0],
-    minimumBoundingCentroid[1],
+    momentCentroid[0].toFixed(0),
+    momentCentroid[1].toFixed(0),
+    arithmeticMeanCentroid[0].toFixed(0),
+    arithmeticMeanCentroid[1].toFixed(0),
+    rootMeanSquareCentroid[0].toFixed(0),
+    rootMeanSquareCentroid[1].toFixed(0),
+    harmonicMeanCentroid[0].toFixed(0),
+    harmonicMeanCentroid[1].toFixed(0),
+    geometricMeanCentroid[0].toFixed(0),
+    geometricMeanCentroid[1].toFixed(0),
+    medianCentroid[0].toFixed(0),
+    medianCentroid[1].toFixed(0),
+    minimumBoundingCentroid[0].toFixed(0),
+    minimumBoundingCentroid[1].toFixed(0),
   ];
   return datapoint;
 }
@@ -532,7 +532,7 @@ async function processData() {
   for (var subdiv_type of all_subdivs) {
     for (var water_status of water_statuses) {
       if (water_status == true) {
-        for (var coordsys of water_coordsys) {
+        for (var coordsys of coordsyses) {
           selectedCoordsys = coordsys;
           water = water_status;
           for (const subdiv of subdiv_type) {
@@ -541,7 +541,7 @@ async function processData() {
           }
         }
       } else if (water_status == false) {
-        for (var coordsys of no_water_coordsys) {
+        for (var coordsys of coordsyses) {
           selectedCoordsys = coordsys;
           water = water_status;
           for (const subdiv of subdiv_type) {
@@ -555,7 +555,7 @@ async function processData() {
   const csv = arrayToCSV(data);
 
   return new Promise((resolve, reject) => {
-    fs.writeFile(`all_test_data_v6.csv`, csv, (err) => {
+    fs.writeFile(`all_test_data_v7.csv`, csv, (err) => {
       if (err) {
         reject(err);
       } else {

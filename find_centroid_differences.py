@@ -4,9 +4,9 @@ import numpy as np
 
 # Initialize the Geod object for distance calculations
 geod = pyproj.Geod(ellps='GRS80')
-transformer = pyproj.Transformer.from_crs("epsg:25833","epsg:4258")
+transformer = pyproj.Transformer.from_crs("epsg:25833","epsg:4326")
 
-df_centroids = pd.read_csv("subdiv_centroids.csv")
+df_centroids = pd.read_csv("subdiv_centroids_v2.csv")
 df_control_kommuner = pd.read_csv("../midtpunkt_kommuner.csv")
 df_control_fylker = pd.read_csv("../midtpunkt_fylker.csv")
 
@@ -29,9 +29,9 @@ for index, row in df_centroids.iterrows():
     controlX, controlY = transformer.transform(control[0],control[1])
     compareX, compareY = transformer.transform(row.iloc[3],row.iloc[4])
     _, _, diff = geod.inv(controlX,controlY,compareX,compareY)
-    df_centroids.at[index, "error"] = diff
+    df_centroids.at[index, "error"] = np.round(diff,1)
     df_centroids.at[index, "area"] = np.abs(row["area"])
 
 df_centroids = df_centroids.sort_values(by="number")
 
-df_centroids.to_csv("subdiv_centroids_processed.csv", index=False)
+df_centroids.to_csv("subdiv_centroids_processed_v2.csv", index=False)

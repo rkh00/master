@@ -6,24 +6,24 @@ barWidth = 0.25
 fig = plt.subplots(figsize =(9, 6)) 
 
 # # Municipality data, water
-# UTM32 = [14453.77, 6593.01, 11154.63, 11.50]
-# UTM33 = [14455.23, 6601.17, 11157.71, 10.81]
-# UTM35 = [14458.17, 6616.26, 11162.07, 15.89]
+# UTM32 = [14454, 6593, 11154.7, 11.8]
+# UTM33 = [14455.2, 6601.4, 11157.8, 10.4]
+# UTM35 = [14458, 6616.2, 11162, 15.7]
 
 # # County data, water
-# UTM32 = [18722.76, 30528.06, 49894.85, 45.95]
-# UTM33 = [18722.57, 30397.56, 49971.66, 140.65]
-# UTM35 = [18729.12, 30080.75, 50113.84, 385.32]
+# UTM32 = [18722.3, 30528.1, 49893.9, 46.5]
+# UTM33 = [18722.6, 30397.5, 49972, 140]
+# UTM35 = [18729.4, 30080.6, 50114.1, 385.9]
 
 # # Municipality data, no water
-# UTM32 = [326.92, 14.49, 160.55, 5.80]
-# UTM33 = [327.00, 17.12, 158.46, 5.07]
-# UTM35 = [327.16, 31.15, 155.03, 10.83]
+# UTM32 = [327.1, 14.6, 160.4, 5.7]
+# UTM33 = [327.5, 17.5, 158.5, 4.9]
+# UTM35 = [327.2, 30.8, 155.1, 10.9]
 
 # County data, no water
-UTM32 = [259.44, 751.03, 632.46, 44.97]
-UTM33 = [259.64, 519.49, 585.92, 141.73]
-UTM35 = [258.18, 58.94, 585.92, 141.73]
+UTM32 = [258.8, 750.2, 632.5, 45]
+UTM33 = [260.1, 520.4, 585.3, 142.1]
+UTM35 = [258.2, 57.5, 487.9, 386.4]
 
 # Set position of bar on X axis 
 br1 = np.arange(len(UTM32)) 
@@ -39,7 +39,7 @@ plt.bar(br3, UTM35, color ='g', width = barWidth,
         edgecolor ='grey', label ='UTM35') 
  
 # Adding Xticks 
-plt.title("Errors in county test data (w/o water)", fontweight ='bold', fontsize = 20)
+plt.title("Deviations in county test data (w/o water)", fontweight ='bold', fontsize = 20)
 plt.xlabel('Dataset', fontweight ='bold', fontsize = 15) 
 plt.ylabel('Error (m)', fontweight ='bold', fontsize = 15) 
 plt.xticks([r + barWidth for r in range(len(UTM32))], 

@@ -4,12 +4,12 @@ from pyproj import Geod
 # Coordinates of points A, B, and C (latitude, longitude)
 coordinates = {
     'kv': (63.9905722, 12.3077975),
-    'munic': (63.9881312, 12.3227037),
-    'count': (63.9882084, 12.3227561)
+    'munic': (63.988127, 12.3226955),
+    'count': (63.9882087, 12.322749)
 }
 
 # Initialize the Geod object for distance calculations
-geod = Geod(ellps='GRS80')
+geod = Geod(ellps='WGS84')
 
 # Calculate distances from point A to points B and C
 _, _, dist_AB = geod.inv(coordinates['kv'][1], coordinates['kv'][0], coordinates['munic'][1], coordinates['munic'][0])
